@@ -18,7 +18,7 @@ colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
 
 class BasicBodyShape:
     def update_pos( self , cm_pos_new , axis_new , up_new ):
-        geo_pos_new = cm_pos_new + self.geo_center_pos
+        geo_pos_new = cm_pos_new + self.geo_pos_local
         self.shape.pos = vp.vec( *geo_pos_new )
         self.shape.axis = vp.vec( *axis_new )
         self.shape.up = vp.vec( *up_new )
@@ -48,7 +48,9 @@ class CubeShape( BasicBodyShape ):
 
 
 class MirrorShape( BasicBodyShape ):
-    def __init__( self , pos , axis , up , **kwargs  ):
+    def __init__( self , cm_pos , axis , up , **kwargs  ):
+        self.geo_pos_local = np.array([0,0,0])
+        geo_pos = cm_pos + self.geo_pos_local
         diameter = 250e-3
         length = 151.399e-3
         color=vp.vec( *to_rgb(colors[0]) )
@@ -57,13 +59,15 @@ class MirrorShape( BasicBodyShape ):
                                                 up=vp.vec(0,0,1) ,
                                                 radius=diameter/2,
                                                 opacity=0.6 ,
-                                                color=color )] , visible=False )
-        self.update_pos( pos , axis , up )
+                                                color=color )] , pos=vp.vec(*geo_pos), visible=False )
+        self.update_pos( cm_pos , axis , up )
         self.shape.visible = True
 
 
 class RecoilMassShape( BasicBodyShape ):
-    def __init__( self , pos , axis , up , **kwargs ):
+    def __init__( self , cm_pos , axis , up , **kwargs ):
+        self.geo_pos_local = np.array([0,0,0])
+        geo_pos = cm_pos + self.geo_pos_local
         length = 186e-3
         outer_shape = vp.shapes.circle(radius=154e-3)
         inner_shape = vp.shapes.circle(radius=134e-3) # This will be the hole
@@ -75,15 +79,15 @@ class RecoilMassShape( BasicBodyShape ):
                                   vp.vec(length,0,0)],
                                   shape=difference,
                                   opacity=0.4 ,
-                                  color=color , visible=False )] , visible=False)
-        self.update_pos( pos , axis , up )
+                                  color=color , visible=False )] , pos=vp.vec(*geo_pos), visible=False)
+        self.update_pos( cm_pos , axis , up )
         self.shape.visible = True
 
 
 class IntermediateMassShape( BasicBodyShape ):
     def __init__( self , cm_pos , axis , up , **kwargs  ):
-        self.geo_center_pos = np.array([0,0,7e-3])
-        geo_pos = cm_pos + self.geo_center_pos
+        self.geo_pos_local = np.array([0,0,7e-3])
+        geo_pos = cm_pos + self.geo_pos_local
         width_IM = 230e-3
         height_IM = 150e-3
         color = vp.vec( *to_rgb(colors[0]) )
@@ -98,13 +102,13 @@ class IntermediateMassShape( BasicBodyShape ):
         #                                     width = height_IM ,
         #                                     color = color ) ] , opacity=0.3 , visible = True )
 
-        self.shape = vp.compound( [ vp.box( pos = vp.vec(*geo_pos) ,
+        self.shape = vp.compound( [ vp.box( pos = vp.vec(0,0,0), # pos = vp.vec(*geo_pos) ,
                                     axis = vp.vec(*axis) ,
                                     up = vp.vec(*up) ,
                                     length =  width_IM ,
                                     height = width_IM ,
                                     width = height_IM ,
-                                    color = color ) ] , opacity=0.3 , visible = True )
+                                    color = color ) ] , pos=vp.vec(*geo_pos), opacity=0.3 , visible = True )
         
         # print('IM size:', self.shape.size ) 
         # print('IM geo_pos:', geo_pos )
@@ -116,8 +120,8 @@ class IntermediateMassShape( BasicBodyShape ):
 
 class IntermediateRecoilMassShape( BasicBodyShape ):
     def __init__( self , cm_pos , axis , up , **kwargs  ):
-        self.geo_center_pos = np.array([0,0,-25.5e-3]) # Position of geometrical center w.r.t. center of mass  
-        geo_pos = cm_pos + self.geo_center_pos
+        self.geo_pos_local = np.array([0,0,-25.5e-3]) # Position of geometrical center w.r.t. center of mass  
+        geo_pos = cm_pos + self.geo_pos_local
         # Dimensions of box
         height = 181e-3
         length = 346e-3
@@ -126,21 +130,25 @@ class IntermediateRecoilMassShape( BasicBodyShape ):
         color = vp.color.cyan
 
         # +Vertical
-        ver_plus = vp.box(pos=vp.vec( 0, height/2-thick/2, 0 ), up=vp.vec(0,0,1), length=length, width=thick, height=width )
+        ver_plus = vp.box(pos=vp.vec( 0, height/2-thick/2, 0 ), up=vp.vec(0,0,1), length=length, width=thick, height=width, visible = False )
+        
         # +Longitudinal
-        lon_plus = vp.box(pos=vp.vec( length/2-thick/2, -thick/2, 0 ), up=vp.vec(0,0,1), length=thick, width=height-thick, height=width )
+        lon_plus = vp.box(pos=vp.vec( length/2-thick/2, -thick/2, 0 ), up=vp.vec(0,0,1), length=thick, width=height-thick, height=width, visible = False )
+        
         # -Longitudinal
-        lon_minus = vp.box(pos=vp.vec( -length/2+thick/2, -thick/2, 0 ), up=vp.vec(0,0,1), length=thick, width=height-thick, height=width )
+        lon_minus = vp.box(pos=vp.vec( -length/2+thick/2, -thick/2, 0 ), up=vp.vec(0,0,1), length=thick, width=height-thick, height=width, visible = False )
+        
         # +Transverse
-        trv_plus = vp.box(pos=vp.vec( 0, -thick/2, width/2-thick/2 ), up=vp.vec(0,0,1), length=length-2*thick, width=height-thick, height=thick )
+        trv_plus = vp.box(pos=vp.vec( 0, -thick/2, width/2-thick/2 ), up=vp.vec(0,0,1), length=length-2*thick, width=height-thick, height=thick, visible = False )
+        
         # -Transverse
-        trv_minus = vp.box(pos=vp.vec( 0, -thick/2, -width/2+thick/2 ), up=vp.vec(0,0,1), length=length-2*thick, width=height-thick, height=thick )
+        trv_minus = vp.box(pos=vp.vec( 0, -thick/2, -width/2+thick/2 ), up=vp.vec(0,0,1), length=length-2*thick, width=height-thick, height=thick, visible = False )
 
         # With a sphere at the center
         # center = vp.sphere( pos=vp.vec(0,0,0), radius=0.01, color=vp.color.green )
         # self.shape = vp.compound( [ center, ver_plus, lon_plus, lon_minus, trv_plus, trv_minus ], opacity=0.3, visible=True, color=color )
         
-        self.shape = vp.compound( [ ver_plus, lon_plus, lon_minus, trv_plus, trv_minus ], opacity=0.3, visible=True, color=color )
+        self.shape = vp.compound( [ ver_plus, lon_plus, lon_minus, trv_plus, trv_minus ], pos=vp.vec(*geo_pos), opacity=0.3, visible=True, color=color )
 
         # print('IRM size:', self.shape.size ) 
         # print('IRM geo_pos:', geo_pos ) 
@@ -176,7 +184,9 @@ class SpringShape( BasicLinkShape ):
 #----------- For GAS filter -------------#
 
 class GASFilterShape( BasicBodyShape ):
-    def __init__( self , pos , axis , up , **kwargs ):
+    def __init__( self , cm_pos , axis , up , **kwargs ):
+        self.geo_pos_local = np.array([0,0,0]) # Position of geometrical center w.r.t. center of mass  
+        geo_pos = cm_pos + self.geo_pos_local
         upper_radius = 609.257e-3 / 2
         lower_radius = 362.000e-3
         cone_height = 142e-3
@@ -188,7 +198,7 @@ class GASFilterShape( BasicBodyShape ):
                                              vp.vec( 0 , 0 , cone_height / 2 ) ] , 
                                              shape = vp.shapes.circle( radius = lower_radius ),
                                              scale = [ 1 , upper_radius/lower_radius ] ,
-                                             color = color , visible = False )
+                                             color = color, visible = False )
         cone.rotate( axis = vp.vec( 1 , 0 , 0 ) , angle = - vp.pi / 2 )
 
         disc = vp.extrusion( path = [ vp.vec( 0 , 0 , -base_height / 2 ),
@@ -200,9 +210,9 @@ class GASFilterShape( BasicBodyShape ):
         disc.pos = vp.vec( 0 , - ( cone_height + base_height ) / 2 , 0 )
         
 
-        self.shape = vp.compound( [ cone , disc ]  , visible = False , opacity = 0.6 )
+        self.shape = vp.compound( [ cone , disc ], pos=vp.vec(*geo_pos), visible = True , opacity = 0.6 )
         
-        self.update_pos( pos , axis , up )
+        self.update_pos( cm_pos , axis , up )
         self.shape.visible = True
 
 

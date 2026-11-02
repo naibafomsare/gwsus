@@ -631,6 +631,9 @@ class Suspension:
         vectors = mpm.chop( vectors , tol=1e-10)
         
         vectors = vectors.T.tolist() # Transpose so the eigenvector set becomes a list of lists 
+
+        ############  print( values , vectors ) #########################################################################################################################
+        
         sorted_pairs = sorted( list( zip( values, vectors ) ) ) # # Sort eigenvalues and eigenvectors from lowest to highest frequency
         
         # Create a nested dictionary to store eigenvector information

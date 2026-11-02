@@ -26,8 +26,8 @@ factorX = 1.9 ; # Added by Fabian in order to get resonance frequency SUMCOM #35
 factorY = 1.3 ;
 moi = utils.moi_diagonal( factorY*0.1835 , factorX*0.15267 , 0.2491 )
 XXX = 1.8e-3 ;
-# pos_IM = { 'for_BF':utils.center( XXX ) , 'for_MIR' : utils.rectangle( 2*5e-3 , 2*130e-3 , -XXX ) , 'for_RM' : utils.rectangle( 2*10e-3 , 2*145e-3 , -XXX ) } 
-pos_IM = { 'for_GND':utils.center( -13.4e-3 ) , 'for_MIR' : utils.rectangle( 2*5e-3 , 2*130e-3 , -XXX ) , 'for_RM' : utils.rectangle( 2*10e-3 , 2*145e-3 , -XXX ) } 
+# pos_IM = { 'for_GND':utils.center( -13.4e-3 ) , 'for_MIR' : utils.rectangle( 2*5e-3 , 2*130e-3 , -XXX ) , 'for_RM' : utils.rectangle( 2*10e-3 , 2*145e-3 , -XXX ) } 
+pos_IM = { 'for_BF':utils.center( -13.4e-3 ) , 'for_MIR' : utils.rectangle( 2*5e-3 , 2*130e-3 , -XXX ) , 'for_RM' : utils.rectangle( 2*10e-3 , 2*145e-3 , -XXX ) } 
 IM = utils.BodyData( mass = mass , moi = moi , pos = pos_IM , shape = shapes.IntermediateMassShape )
 del  mass , moi
 
@@ -36,8 +36,8 @@ del  mass , moi
 #-------- Intermediate Recoil Mass -----------#
 mass = 8.933
 moi = utils.moi_diagonal( 0.1821 , 0.1762 , 0.29221 )
-# pos_IRM = { 'for_BF': utils.triangle( 2*158e-3 , 60.5e-3 , '-L') }
-pos_IRM = { 'for_GND': utils.triangle( 2*158e-3 , 60.5e-3 , '-L') }
+pos_IRM = { 'for_BF': utils.triangle( 2*158e-3 , 60.5e-3 , '-L') }
+# pos_IRM = { 'for_GND': utils.triangle( 2*158e-3 , 60.5e-3 , '-L') }
 IRM = utils.BodyData( mass = mass , moi = moi , pos = pos_IRM , shape = shapes.IntermediateRecoilMassShape )
 del  mass , moi
 
@@ -48,8 +48,8 @@ f0 = 0.250
 saturation = -1e-3
 loss_angle = 1e-4
 moi = utils.moi_diagonal( 3.670091 , 3.662444 , 6.095939 )
-pos_BF = { 'for_F1':utils.center( 2.5e-3 ) , 'for_IM' : utils.center( -12.5e-3 ) , 'for_IRM':utils.triangle( 2*158e-3 , -87.1e-3 , '-L') }
-# pos_BF = { 'for_GND':utils.center( 2.5e-3 ) , 'for_IM' : utils.center( -12.5e-3 ) , 'for_IRM':utils.triangle( 2*158e-3 , -87.1e-3 , '-L') }
+# pos_BF = { 'for_F1':utils.center( 2.5e-3 ) , 'for_IM' : utils.center( -12.5e-3 ) , 'for_IRM':utils.triangle( 2*158e-3 , -87.1e-3 , '-L') }
+pos_BF = { 'for_F1':utils.center( 20e-3 ) , 'for_IM' : utils.center( -12.5e-3 ) , 'for_IRM':utils.triangle( 2*158e-3 , -107e-3 , '-L') }
 BF = utils.GASFilterData( mass = mass , moi = moi , pos = pos_BF , resonant_frequency = f0 , saturation = saturation  , loss_angle = loss_angle , shape = shapes.GASFilterShape ) 
 del  mass , f0 , saturation , loss_angle , moi
 
@@ -67,10 +67,10 @@ del  mass , f0 , saturation , loss_angle , moi
 
 #------------- Ground ---------------------#
 
-# pos_GND = { 'for_F1' : utils.center(0) }
+pos_GND = { 'for_F1' : utils.center(0) }
 
 # pos_GND = { 'for_BF' : utils.center(0) }
-pos_GND = { 'for_IM' : utils.center(71e-3), 'for_IRM' : utils.triangle( 2*158e-3 , -23.5e-3 , '-L') }
+# pos_GND = { 'for_IM' : utils.center(71e-3), 'for_IRM' : utils.triangle( 2*158e-3 , -23.5e-3 , '-L') }
 
 GND = utils.GroundData( pos = pos_GND )
 
