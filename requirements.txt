@@ -1,0 +1,10 @@
+bigtree
+ipython
+matplotlib
+mpmath
+numpy
+symengine
+sympy
+tabulate
+termcolor
+vpython

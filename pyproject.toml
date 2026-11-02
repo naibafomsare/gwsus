@@ -1,0 +1,23 @@
+[project]
+name = "gwsus"
+version = "0.1.0"
+requires-python = ">=3.10"
+
+dependencies = [
+	"bigtree",
+	"ipython",
+	"matplotlib",
+	"mpmath",
+	"numpy",
+	"symengine",
+	"sympy",
+	"tabulate",
+	"termcolor",
+	"vpython",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "jupyter",
+]
