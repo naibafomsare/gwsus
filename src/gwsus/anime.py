@@ -27,7 +27,7 @@ def prepare_anime( sus ):
     # `suspension.create_coords_list`
     dummy_list = sus.float_coords_vector.T.tolist()[0]
     for idx , coord in enumerate( sus.float_coords_list ) :
-        time_dict[ coord ] = dummy_list[ idx ].subs( time_dict ) 
+        time_dict[ coord ] = dummy_list[ idx ].subs( time_dict ) # Because float coordinates are written in terms of body coordinates
 
     
     for body in sus.body_list[1:] : # Without the ground
