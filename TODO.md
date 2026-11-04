@@ -9,7 +9,9 @@
 
 ## Documentation
 - [ ] Write appropriate stringdocs to functions, methods and classes, begining with the most frequently used ones.
-- [ ] Write a tutorial.
+- [ ] Write a quickstart guide.
+- [X] Add documentation generated with Sphinx
+- [ ] Create documentation in Read the Docs.
 
 ## Information output
 - [X] Split long tables into shorter tables placed side by side.
