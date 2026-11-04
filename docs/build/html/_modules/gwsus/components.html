@@ -1,0 +1,630 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>gwsus.components &mdash; Gwsus 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="../../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Gwsus
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Gwsus</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">gwsus.components</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for gwsus.components</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">symengine</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">se</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span> <span class="c1"># for element-wise operations on wires with necks</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">bigtree</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">bt</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.</span><span class="w"> </span><span class="kn">import</span> <span class="n">shapes3d</span>
+
+
+<div class="viewcode-block" id="Ground">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Ground">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Ground</span><span class="p">(</span> <span class="n">bt</span><span class="o">.</span><span class="n">Node</span> <span class="p">):</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    This is the ground.</span>
+<span class="sd">    '''</span>
+    
+    <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'lon'</span> <span class="p">,</span> <span class="s1">'tra'</span> <span class="p">,</span> <span class="s1">'ver'</span> <span class="p">,</span> <span class="s1">'roll'</span> <span class="p">,</span> <span class="s1">'pitch'</span> <span class="p">,</span> <span class="s1">'yaw'</span><span class="p">]</span> <span class="c1"># The same for all instances of derived classes </span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">sus</span> <span class="p">,</span> <span class="n">name</span> <span class="p">,</span> <span class="n">data</span> <span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+        
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="c1"># Call bigtree node constructor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        
+        <span class="bp">self</span><span class="o">.</span><span class="n">attachment_points_p</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">pos</span> <span class="c1"># w.r.t. the center of mass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1"># Check whether utils.con(0) or None are better</span>
+
+        <span class="c1"># Displacement symbolic variables</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="p">[</span> <span class="n">item</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">RigidBody</span><span class="o">.</span><span class="n">names</span> <span class="p">]</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tra</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yaw</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span> <span class="n">s</span> <span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">lon</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">tra</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ver</span> <span class="p">]</span> <span class="p">)</span> <span class="c1"># A column vector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">angles</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yaw</span> <span class="p">]</span> <span class="p">)</span> <span class="c1"># A column vector</span>
+
+        <span class="c1"># Write the displacement vectors of the attachment points w.r.t. the world reference system.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attachment_points_r</span> <span class="o">=</span> <span class="p">{}</span> 
+        <span class="k">for</span> <span class="n">key</span> <span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attachment_points_p</span><span class="o">.</span><span class="n">items</span><span class="p">():</span> <span class="c1"># The key is the name of the set of  atachment points</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">attachment_points_r</span><span class="p">[</span> <span class="n">key</span> <span class="p">]</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">+</span> <span class="n">utils</span><span class="o">.</span><span class="n">rotB2S</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span> <span class="o">*</span> <span class="n">pp</span>  <span class="k">for</span> <span class="n">pp</span> <span class="ow">in</span> <span class="n">value</span> <span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">body_coords</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">float_coords</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gnd_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">angles</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">tolist</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+    
+<div class="viewcode-block" id="Ground.update">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Ground.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>            
+        <span class="c1"># Calculate the load of the body</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_leaf</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">load</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span> <span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">load</span><span class="o">+</span><span class="n">child</span><span class="o">.</span><span class="n">mass</span><span class="p">)</span> <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="RigidBody">
+<a class="viewcode-back" href="../../index.html#gwsus.components.RigidBody">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">RigidBody</span><span class="p">(</span> <span class="n">Ground</span> <span class="p">):</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    A short description.</span>
+
+<span class="sd">    A more wordy description.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    attachment_points_p : dict</span>
+<span class="sd">        A dictionary containing the displacement vectors of the attachment points written in body coordinates w.r.t. the body's center of mass.</span>
+<span class="sd">        *   Each key is the name (str) of the attachment point set (e.g., "for_IM", "for_MIR").</span>
+<span class="sd">        *   Each value is a list of column vectors defined as $3 \times 1$ Symengine's MutableDenseMatrix matrices with numeric entries.</span>
+<span class="sd">        *   For internal use, but accesible for user's inspection.</span>
+<span class="sd">        </span>
+<span class="sd">    attachment_points_r : dict</span>
+<span class="sd">        A dictionary containing the displacement vectors of the attachment points written in world coordinates w.r.t. the origin of the world reference frame.</span>
+<span class="sd">        *   Each key is the name (str) of the attachment point set (e.g., "for_IM", "for_MIR").</span>
+<span class="sd">        *   Each value is a list of column vectors defined as $3 \times 1$ Symengine's MutableDenseMatrix matrices with symbolic entries.</span>
+<span class="sd">        *   For internal use, but accesible for user's inspection.</span>
+<span class="sd">    """</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">sus</span> <span class="p">,</span> <span class="n">name</span> <span class="p">,</span> <span class="n">data</span> <span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+        <span class="n">Ground</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">sus</span> <span class="p">,</span> <span class="n">name</span> <span class="p">,</span> <span class="n">data</span> <span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+        <span class="c1"># self.sus = sus # The suspension the body belongs to, currently not in use.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">mass</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">moi</span>  <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">moi</span> <span class="c1"># Moment of inertia, se.Matrix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">shape</span> <span class="c1"># Equals to the object definition itself</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape_instance</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># It will be set to the object instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">link</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Link instance the body couples with to its parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">link_internal</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># Empty list for a rigid body</span>
+        
+        <span class="c1"># Velocity symbolic variables</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">" "</span><span class="o">.</span><span class="n">join</span><span class="p">(</span> <span class="p">[</span> <span class="s1">'v'</span> <span class="o">+</span> <span class="n">item</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">RigidBody</span><span class="o">.</span><span class="n">names</span> <span class="p">]</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vlon</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vtra</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vver</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vroll</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vpitch</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vyaw</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span> <span class="n">s</span> <span class="p">,</span> <span class="n">real</span><span class="o">=</span><span class="kc">True</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">vlon</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vtra</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vver</span> <span class="p">]</span> <span class="p">)</span> <span class="c1"># A column vector</span>
+        <span class="n">vangles</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">vroll</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vpitch</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vyaw</span> <span class="p">]</span> <span class="p">)</span> <span class="c1"># A column vector</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">omega</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span> <span class="mi">1</span> <span class="p">,</span>  <span class="mi">0</span>                   <span class="p">,</span> <span class="o">-</span><span class="n">se</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="p">)</span>                       <span class="p">]</span> <span class="p">,</span>
+                                  <span class="p">[</span> <span class="mi">0</span> <span class="p">,</span>  <span class="n">se</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span> <span class="p">)</span> <span class="p">,</span>  <span class="n">se</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span> <span class="p">)</span> <span class="o">*</span> <span class="n">se</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="p">)</span> <span class="p">]</span> <span class="p">,</span> 
+                                  <span class="p">[</span> <span class="mi">0</span> <span class="p">,</span> <span class="o">-</span><span class="n">se</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span> <span class="p">)</span> <span class="p">,</span>  <span class="n">se</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">roll</span> <span class="p">)</span> <span class="o">*</span> <span class="n">se</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">pitch</span> <span class="p">)</span> <span class="p">]</span> <span class="p">]</span> <span class="p">)</span> <span class="o">*</span> <span class="n">vangles</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">body_coords</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gnd_coords</span> <span class="c1"># Override the assignment given in parent class ``Ground``</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gnd_coords</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Gravitational potential energy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grav_Ep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">*</span> <span class="n">utils</span><span class="o">.</span><span class="n">g</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">ver</span>
+        
+        <span class="c1"># Kinetic energy</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ek</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">Rational</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">moi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega</span> <span class="p">)</span> <span class="p">)</span>
+        
+        <span class="c1"># Orientation of the body and its links for animation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orien_lambda</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orienw_lambda</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="RigidBody.update">
+<a class="viewcode-back" href="../../index.html#gwsus.components.RigidBody.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+        
+        <span class="c1"># Calculate the load of the external link</span>
+        <span class="c1"># if not self.is_root: # Ground excluded because it is not supported by a link</span>
+        <span class="n">link</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">link</span>
+        <span class="n">link</span><span class="o">.</span><span class="n">load</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">mass</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">load</span> 
+        <span class="n">link</span><span class="o">.</span><span class="n">load_single</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">load</span> <span class="o">/</span> <span class="n">link</span><span class="o">.</span><span class="n">num</span> <span class="c1"># Load of individual links of the set of links</span>
+        <span class="n">link</span><span class="o">.</span><span class="n">tension</span> <span class="o">=</span> <span class="n">link</span><span class="o">.</span><span class="n">load_single</span> <span class="o">*</span> <span class="n">utils</span><span class="o">.</span><span class="n">g</span> <span class="c1"># Tension in individual links of the set</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">link</span><span class="o">.</span><span class="n">update</span><span class="p">()</span></div>
+</div>
+
+
+
+<span class="c1">#--------------- Links --------------------#</span>
+
+<div class="viewcode-block" id="Spring">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Spring">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Spring</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Parent class of `Wire`, `Flexure` and `Direct`. It is not directly usable, it is a template.</span>
+<span class="sd">    """</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">sus</span> <span class="p">,</span> <span class="n">data</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        sus is the suspension the wires belong to.</span>
+<span class="sd">        '''</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sus</span> <span class="o">=</span> <span class="n">sus</span> <span class="c1"># The suspension the link belongs to, used in class `Wire` in method `calculate_torsion_Ep`.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">damp_factor</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">se</span><span class="o">.</span><span class="n">I</span> <span class="o">*</span> <span class="n">data</span><span class="o">.</span><span class="n">loss_angle</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">number</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k_axial</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">k_axial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k_torsion</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">k_torsion</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">length</span> <span class="c1"># Unstretched length</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">shapes3d</span><span class="o">.</span><span class="n">SpringShape</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">load</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Load of the set of springs. In `Spring` and `Wire` used only for printing information on the screen. </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_single</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># Load of the individual springs. In `Spring` and `Wire` used only for printing information on the screen.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tension</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Tension in individual springs</span>
+         
+        <span class="c1"># To be updated by method `calculate_stretched_length` in this class.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_stretch</span> <span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Total stretched length of wire.</span>
+        
+        <span class="c1"># Vertical length of the link in equilibrium. Used only to guess the vertical equilibrium positions of the bodies in method `supension.guess_equi_coords`.</span>
+        <span class="c1"># It must either be given or calculated in a method.In class `Wire`, in method `calculate_stretched_length`, it's set equal to the stretched length assuming</span>
+        <span class="c1"># the wire is vertical in equilibrium. When it's not vertical an angle is needed, but this hasn't been implemented yet.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vlength</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">con</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># Default value</span>
+
+        <span class="c1">#----- To be updated by `suspension.connect` method --------# </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_upper</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># List with position vectors of the upper attachment points, also in dict `self.body.attachment_points_r`, but gathered here for ease of access.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_lower</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># List with position vectors of the lower attachment points, also in dict `self.body.attachment_points_r`, but gathered here for ease of access.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">angles_lower</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">angles_upper</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># self.body = None # Write here why we need this.</span>
+        
+        <span class="c1"># For calculating the axial and torsional potential energies, and for the animation. To be updated in method `calculate_geometry`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r_diff</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># List with vectors `self.r_upper - self.r_lower`, i.e., vectors point upwards.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">norm_diff</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># List with the norms of the elements of `self.r_diff`.</span>
+
+        <span class="c1"># Elastic potential energy dictionary</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ep_dict</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'axial'</span><span class="p">:</span> <span class="p">{</span> <span class="s1">'damp'</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">damp_factor</span> <span class="p">,</span> <span class="s1">'energy'</span>  <span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">con</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">,</span> <span class="s1">'master'</span> <span class="p">:</span> <span class="kc">None</span> <span class="p">}</span> <span class="p">,</span>
+                        <span class="s1">'torsion'</span>   <span class="p">:</span> <span class="p">{</span> <span class="s1">'damp'</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">damp_factor</span> <span class="p">,</span> <span class="s1">'energy'</span>  <span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">con</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">,</span> <span class="s1">'master'</span> <span class="p">:</span> <span class="kc">None</span> <span class="p">}</span> <span class="p">,</span>
+                        <span class="s1">'bend'</span>     <span class="p">:</span> <span class="p">{</span> <span class="s1">'damp'</span> <span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">con</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">,</span> <span class="s1">'energy'</span>  <span class="p">:</span> <span class="n">utils</span><span class="o">.</span><span class="n">con</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">,</span> <span class="s1">'master'</span> <span class="p">:</span> <span class="kc">None</span> <span class="p">}</span> <span class="p">}</span>
+
+<div class="viewcode-block" id="Spring.update">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Spring.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        """</span>
+        <span class="c1"># `calculate.stretched_length` in only useful in this class for</span>
+        <span class="c1"># guessing equilibrium values. In derived class `Wire` it is overriden.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_stretched_length</span><span class="p">()</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_geometry</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="Spring.calculate_stretched_length">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Spring.calculate_stretched_length">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_stretched_length</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        L0 and k are scalars, not numpy arrays</span>
+<span class="sd">        """</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tension</span>     <span class="c1"># Tension in the individual wire</span>
+        <span class="n">L0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span>     <span class="c1"># Unstretched original length </span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_axial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_stretch</span> <span class="o">=</span> <span class="n">L0</span> <span class="o">+</span> <span class="n">T</span> <span class="o">/</span> <span class="n">k</span> 
+        <span class="bp">self</span><span class="o">.</span><span class="n">vlength</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_stretch</span> <span class="c1"># Estimate of the vertical length in equilibrium.</span>
+        <span class="nb">print</span><span class="p">(</span> <span class="s1">'vlength spring:'</span> <span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">vlength</span><span class="p">)</span> <span class="p">)</span> <span class="c1">####################################################################################################33</span></div>
+
+
+<div class="viewcode-block" id="Spring.calculate_geometry">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Spring.calculate_geometry">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_geometry</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Calculates the vector differences between attachment points and their norms.</span>
+
+<span class="sd">        These quantities are required to calculate the axial and torsional potential energies,</span>
+<span class="sd">        and for the animation of the wires.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        Can be called after `suspension.connect`, and therefore, it's called in `suspension.update` via `link.update`.</span>
+<span class="sd">        """</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="p">):</span>
+            
+            <span class="n">r_diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_upper</span><span class="p">[</span> <span class="n">index</span> <span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_lower</span><span class="p">[</span> <span class="n">index</span> <span class="p">]</span> <span class="c1"># This vector points upwards</span>
+            <span class="n">norm_diff</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span> <span class="n">r_diff</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">r_diff</span> <span class="p">)</span> <span class="p">)</span>
+            
+            <span class="bp">self</span><span class="o">.</span><span class="n">r_diff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">r_diff</span> <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">norm_diff</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">norm_diff</span> <span class="p">)</span></div>
+
+
+    <span class="c1"># Currently not in use</span>
+<div class="viewcode-block" id="Spring.calculate_bending_Ep">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Spring.calculate_bending_Ep">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_bending_Ep</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+        <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">con</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># Symbolic zero</span></div>
+
+
+    <span class="c1"># Method currently used for derived classes `Wire` and `Spring`.</span>
+    <span class="c1"># For classes that don't require it, override it with:</span>
+    <span class="c1">#</span>
+    <span class="c1"># def calculate_axial_Ep( self ):</span>
+    <span class="c1">#     return utils.con(0) # Symbolic zero</span>
+    <span class="c1">#</span>
+<div class="viewcode-block" id="Spring.calculate_axial_Ep">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Spring.calculate_axial_Ep">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_axial_Ep</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        Calculate elastic potential energy</span>
+<span class="sd">        '''</span>
+        <span class="n">add</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="p">):</span>
+            <span class="n">add</span> <span class="o">=</span> <span class="n">add</span> <span class="o">+</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm_diff</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">length</span> <span class="p">)</span><span class="o">**</span><span class="mi">2</span> 
+        <span class="n">total</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">Rational</span><span class="p">(</span> <span class="mi">1</span> <span class="p">,</span> <span class="mi">2</span> <span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_axial</span> <span class="o">*</span> <span class="n">add</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ep_dict</span><span class="p">[</span><span class="s1">'axial'</span><span class="p">][</span><span class="s1">'energy'</span><span class="p">]</span> <span class="o">=</span> <span class="n">total</span>
+        <span class="k">return</span> <span class="n">total</span></div>
+
+
+    <span class="c1"># Method currently used for derived classes `Wire` and `Spring`.</span>
+    <span class="c1"># For classes that don't require it, override it with:</span>
+    <span class="c1">#</span>
+    <span class="c1"># def calculate_torsion_Ep( self ):</span>
+    <span class="c1">#     return utils.con(0) # Symbolic zero</span>
+    <span class="c1">#</span>
+<div class="viewcode-block" id="Spring.calculate_torsion_Ep">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Spring.calculate_torsion_Ep">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_torsion_Ep</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Requires knowledge of the equlibrium positions.</span>
+<span class="sd">        """</span>
+        <span class="n">add</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">angles_diff</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">angles_upper</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">angles_lower</span>
+        <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="p">)</span> <span class="p">:</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">r_diff</span><span class="p">[</span> <span class="n">index</span> <span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">norm_diff</span><span class="p">[</span> <span class="n">index</span> <span class="p">]</span> <span class="p">)</span><span class="o">.</span><span class="n">subs</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">sus</span><span class="o">.</span><span class="n">equi_coords_dict</span> <span class="p">)</span> <span class="c1"># Unit vector along the wire, pointing upwards and in equilibrium. </span>
+            <span class="n">add</span> <span class="o">=</span> <span class="n">add</span> <span class="o">+</span> <span class="n">angles_diff</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">n</span> <span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">Rational</span><span class="p">(</span> <span class="mi">1</span> <span class="p">,</span> <span class="mi">2</span> <span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">k_torsion</span> <span class="o">*</span> <span class="n">add</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">Ep_dict</span><span class="p">[</span><span class="s1">'torsion'</span><span class="p">][</span><span class="s1">'energy'</span><span class="p">]</span> <span class="o">=</span> <span class="n">total</span>
+        <span class="k">return</span> <span class="n">total</span></div>
+
+
+    <span class="c1"># To generate a dictionary with parameter values for the animation.</span>
+    <span class="c1"># To be tailored to the specific vpython shape of the derived class</span>
+    <span class="c1"># It must return a dictionary that will be passed as **kwargs in method `anime.show_anime`.</span>
+    <span class="c1"># def shape_parameters( self ):</span>
+    <span class="c1">#     return {}</span>
+
+<div class="viewcode-block" id="Spring.shape_parameters">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Spring.shape_parameters">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shape_parameters</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        """</span>
+        <span class="n">param</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="c1"># dim = self.body.shape_instance.shape.size # This is a vpython vector, whose elements can only be accessed with dot notation.</span>
+        <span class="n">param</span><span class="p">[</span> <span class="s1">'min_dim'</span> <span class="p">]</span> <span class="o">=</span> <span class="mf">25e-3</span> <span class="c1"># min( dim.x , dim.y ) # Minimum dimension in L and T of the box surrounding the object that hangs from the spring.</span>
+        <span class="k">return</span> <span class="n">param</span></div>
+</div>
+
+
+      
+<div class="viewcode-block" id="Wire">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Wire">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Wire</span><span class="p">(</span> <span class="n">Spring</span> <span class="p">):</span>
+<span class="w">    </span><span class="sd">'''</span>
+<span class="sd">    Currently only wires with circular cross sections are supported</span>
+<span class="sd">    '''</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">sus</span> <span class="p">,</span> <span class="n">data</span> <span class="p">):</span>
+        
+        <span class="n">Spring</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">sus</span> <span class="p">,</span> <span class="n">data</span> <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">number</span> <span class="c1"># Overriding the default value of 1 set in parent class</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">material</span> <span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">material</span>
+
+        <span class="c1"># In the case of receiving a scalar, `np.atleast_1d` makes the array 1D so it's subscriptable.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ll</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">data</span><span class="o">.</span><span class="n">length</span> <span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span> <span class="p">)</span> <span class="p">)</span>  <span class="c1"># Segment lengths unstretched</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dd</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span> <span class="n">data</span><span class="o">.</span><span class="n">diameter</span> <span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span> <span class="p">)</span> <span class="p">)</span> <span class="c1"># Segment diameters</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ll_stretch</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span> <span class="c1"># Numpy array with the stretched lengths of the link segments (for wires with necks).</span>
+
+        <span class="c1"># Elementwise operations using numpy arrays</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">AA</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dd</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="n">se</span><span class="o">.</span><span class="n">Rational</span><span class="p">(</span> <span class="mi">1</span> <span class="p">,</span> <span class="mi">4</span> <span class="p">)</span> <span class="c1"># Segment's cross section areas</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">JJ</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dd</span><span class="o">**</span><span class="mi">4</span> <span class="o">*</span> <span class="n">se</span><span class="o">.</span><span class="n">Rational</span><span class="p">(</span> <span class="mi">1</span> <span class="p">,</span> <span class="mi">64</span> <span class="p">)</span> <span class="c1"># Segment's 2nd moments of area</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">JJee</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dd</span><span class="o">**</span><span class="mi">4</span> <span class="o">*</span> <span class="n">se</span><span class="o">.</span><span class="n">Rational</span><span class="p">(</span> <span class="mi">1</span> <span class="p">,</span> <span class="mi">32</span> <span class="p">)</span> <span class="c1"># Segment's torsional constants</span>
+
+        <span class="c1"># To be updated by `calculate_torsion_stiffness` in this class.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kk_torsion</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span> <span class="c1"># Numpy array with the torsional spring constants of the wire segments.</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">shapes3d</span><span class="o">.</span><span class="n">WireShape</span>
+        
+    <span class="c1"># -------- update method --------------#</span>
+
+<div class="viewcode-block" id="Wire.update">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Wire.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        """</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_axial_stiffness</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_stretched_length</span><span class="p">()</span> <span class="c1"># Useful for guessing equilibrium values and torsional stiffness</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_geometry</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_torsion_stiffness</span><span class="p">()</span></div>
+
+        
+    <span class="c1">#--------- Methods to be called by the wire's `update` method --------------#</span>
+
+<div class="viewcode-block" id="Wire.calculate_axial_stiffness">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Wire.calculate_axial_stiffness">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_axial_stiffness</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">'''</span>
+<span class="sd">        '''</span>
+        <span class="n">E</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">young_modulus</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">AA</span> <span class="c1"># Segment cross section areas</span>
+        <span class="n">L0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ll</span> <span class="c1"># Segment lengths</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kk_axial</span> <span class="o">=</span> <span class="n">E</span> <span class="o">*</span> <span class="n">A</span> <span class="o">/</span> <span class="n">L0</span> <span class="c1"># Elementwise operations using numpy arrays</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k_axial</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">kk_series</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">kk_axial</span> <span class="p">)</span> <span class="c1"># Springs added in series</span></div>
+
+
+    
+<div class="viewcode-block" id="Wire.calculate_stretched_length">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Wire.calculate_stretched_length">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_stretched_length</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Calculate the stretched length of the wire and, for wires with necks, of its segments too.</span>
+
+<span class="sd">        The individual lengths of segments are required for calculating the torsional stiffness. </span>
+<span class="sd">        """</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tension</span>     <span class="c1"># Tension in the individual wire</span>
+        <span class="n">L0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ll</span>         <span class="c1"># Unstretched original lengths of segments</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">kk_axial</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ll_stretch</span> <span class="o">=</span> <span class="n">T</span> <span class="o">/</span> <span class="n">k</span> <span class="c1"># Element-wise operations using numpy arrays</span>
+        <span class="c1">### print( np.sum( self.ll_stretch ).n(10) ) #######################################################################################################################3</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">l_stretch</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">L0</span><span class="p">)</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">ll_stretch</span> <span class="p">)</span> <span class="c1"># Sum of the stretched segments</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vlength</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">l_stretch</span> <span class="c1"># Estimate of the vertical length in equilibrium. In case the link is not supposed to be vertical,</span></div>
+
+                                      <span class="c1"># its projection on the vertical should be given here.</span>
+
+
+<div class="viewcode-block" id="Wire.calculate_torsion_stiffness">
+<a class="viewcode-back" href="../../index.html#gwsus.components.Wire.calculate_torsion_stiffness">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calculate_torsion_stiffness</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        """</span>
+        <span class="c1"># self.calculate_stretched_length()</span>
+        <span class="n">G</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">material</span><span class="o">.</span><span class="n">shear_modulus</span>
+        <span class="n">Je</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">JJee</span> <span class="c1"># Segment torsional constants</span>
+        <span class="n">T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tension</span> <span class="c1"># Tension in the individual wire</span>
+        <span class="n">J</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">JJ</span> <span class="c1"># Segment 2nd moment of area</span>
+        <span class="n">A</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">AA</span> <span class="c1"># Segment cross section areas</span>
+        <span class="n">L</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ll_stretch</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kk_torsion</span> <span class="o">=</span> <span class="p">(</span> <span class="n">G</span> <span class="o">*</span> <span class="n">Je</span> <span class="o">+</span> <span class="n">T</span> <span class="o">*</span> <span class="n">J</span> <span class="o">/</span> <span class="n">A</span> <span class="p">)</span> <span class="o">/</span> <span class="n">L</span> <span class="c1"># Element wise operations using numpy arrays</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k_torsion</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">kk_series</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">kk_torsion</span> <span class="p">)</span> <span class="c1"># Springs added in series        </span></div>
+</div>
+
+
+
+
+<span class="c1">#------------ Flexible bodies ----------------#</span>
+
+<div class="viewcode-block" id="InternalSprings">
+<a class="viewcode-back" href="../../index.html#gwsus.components.InternalSprings">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InternalSprings</span><span class="p">:</span>
+    
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="c1"># Create the spring instances</span>
+        <span class="n">spring_data</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">SpringData</span><span class="p">(</span> <span class="n">number</span> <span class="o">=</span> <span class="mi">1</span> <span class="p">,</span> <span class="n">k_axial</span> <span class="o">=</span> <span class="kc">None</span> <span class="p">,</span> <span class="n">length</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">con</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">,</span> <span class="n">loss_angle</span> <span class="o">=</span> <span class="mf">1e-4</span> <span class="p">)</span> <span class="c1">################### Why is the loss angle set to 1e-4 here?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">springs</span> <span class="o">=</span> <span class="p">[</span> <span class="n">Spring</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">sus</span> <span class="p">,</span> <span class="n">data</span> <span class="o">=</span> <span class="n">spring_data</span> <span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="p">)</span> <span class="p">]</span>
+
+        <span class="c1"># Rotation matrix</span>
+        <span class="n">rot</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">rotB2S</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+        
+        <span class="c1"># Connect the springs and add them to the list link.internal</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="p">,</span> <span class="n">link</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">springs</span> <span class="p">):</span>
+            <span class="n">spr_r_copy</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">spr_r</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="p">)</span> <span class="c1"># Position of spring in global coordinates, deepcopy does not work on symengine matrices.</span>
+            <span class="n">link</span><span class="o">.</span><span class="n">r_upper</span> <span class="o">=</span> <span class="p">[</span> <span class="n">spr_r_copy</span> <span class="p">]</span>
+            <span class="n">link</span><span class="o">.</span><span class="n">r_lower</span> <span class="o">=</span> <span class="p">[</span> <span class="n">spr_r_copy</span> <span class="o">+</span> <span class="n">rot</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir_p</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="p">]</span> <span class="c1"># self.dir_p is in local coordinates.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">link_internal</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">link</span> <span class="p">)</span> 
+
+        <span class="c1"># Cross product with the body's angular velocity. This matrix is already in RigidBody, adapt so it's not written again here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!</span>
+        <span class="n">omegax</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span> <span class="p">[</span> <span class="p">[</span>  <span class="mi">0</span>             <span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">,</span>   <span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">]</span> <span class="p">,</span>
+                              <span class="p">[</span>  <span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="p">,</span>  <span class="mi">0</span>              <span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">]</span> <span class="p">,</span>
+                              <span class="p">[</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">omega</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="p">,</span>   <span class="mi">0</span> <span class="p">]</span> <span class="p">]</span> <span class="p">)</span>
+        
+        <span class="c1"># Velocity of the point masses that represent the masses of the massive springs</span>
+        <span class="n">half</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">Rational</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="o">=</span> <span class="n">ratio</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">con</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">+</span> <span class="n">omegax</span> <span class="o">*</span> <span class="n">rot</span> <span class="o">*</span> <span class="n">half</span> <span class="o">*</span> <span class="n">vec_p</span> <span class="o">+</span> <span class="n">rot</span> <span class="o">*</span> <span class="n">half</span> <span class="o">*</span> <span class="n">vec_vp</span>  <span class="k">for</span> <span class="n">vec_p</span> <span class="p">,</span> <span class="n">vec_vp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir_p</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir_vp</span> <span class="p">)</span> <span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">v2</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">v</span> <span class="o">-</span> <span class="n">omegax</span> <span class="o">*</span> <span class="n">rot</span> <span class="o">*</span> <span class="n">ratio</span> <span class="o">*</span> <span class="n">vec_p</span> <span class="o">-</span> <span class="n">rot</span> <span class="o">*</span> <span class="n">ratio</span> <span class="o">*</span> <span class="n">vec_vp</span>  <span class="k">for</span> <span class="n">vec_p</span> <span class="p">,</span> <span class="n">vec_vp</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir_p</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dir_vp</span> <span class="p">)</span> <span class="p">]</span>
+
+<div class="viewcode-block" id="InternalSprings.update">
+<a class="viewcode-back" href="../../index.html#gwsus.components.InternalSprings.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">M</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spring_load</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="c1"># For a GASFilter num=1, for an IP num=3, for a PreIsolator num=4.</span>
+        <span class="n">ratio</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ratio</span> <span class="c1"># Cannot be zero</span>
+
+        <span class="k">for</span> <span class="n">link</span> <span class="p">,</span> <span class="n">f0</span> <span class="p">,</span> <span class="n">beta</span> <span class="p">,</span> <span class="n">v1</span> <span class="p">,</span> <span class="n">v2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">springs</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f0</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v1</span> <span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">v2</span> <span class="p">)</span> <span class="p">:</span>
+            <span class="n">m1</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">con</span><span class="p">(</span> <span class="mf">0.1</span> <span class="p">)</span>
+            <span class="n">m2</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">4</span><span class="o">*</span><span class="n">M</span><span class="o">*</span><span class="n">beta</span> <span class="o">-</span> <span class="n">beta</span><span class="o">*</span><span class="n">m1</span> <span class="o">+</span> <span class="n">m1</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">4</span><span class="o">*</span><span class="n">ratio</span><span class="o">*</span><span class="p">(</span><span class="n">beta</span><span class="o">*</span><span class="n">ratio</span> <span class="o">+</span> <span class="n">ratio</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="c1"># in terms of ( M , beta , m1 , ratio ) # Check whether m2 &gt; 0!!!!!!!!!!!!!!!!</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">Ek</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">Ek</span> <span class="o">+</span> <span class="n">se</span><span class="o">.</span><span class="n">Rational</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">m1</span> <span class="o">*</span> <span class="n">v1</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">v1</span> <span class="p">)</span> <span class="o">+</span> <span class="n">se</span><span class="o">.</span><span class="n">Rational</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="n">m2</span> <span class="o">*</span> <span class="n">v2</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">v2</span> <span class="p">)</span>
+            <span class="n">link</span><span class="o">.</span><span class="n">k_axial</span> <span class="o">=</span> <span class="p">(</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">se</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">f0</span> <span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span> <span class="n">M</span> <span class="o">+</span> <span class="n">m1</span><span class="o">/</span><span class="mi">4</span> <span class="o">+</span> <span class="n">m2</span><span class="o">*</span><span class="n">ratio</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span> <span class="c1"># in terms of ( f0 , M , m1 , m2 , ratio )</span>
+            <span class="nb">print</span><span class="p">(</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: beta, m1, m2 = </span><span class="si">{</span><span class="n">beta</span><span class="o">.</span><span class="n">evalf</span><span class="p">()</span><span class="si">}</span><span class="s2"> , </span><span class="si">{</span><span class="n">m1</span><span class="o">.</span><span class="n">evalf</span><span class="p">()</span><span class="si">}</span><span class="s2"> , </span><span class="si">{</span><span class="n">m2</span><span class="o">.</span><span class="n">evalf</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span> <span class="p">)</span> 
+            <span class="n">link</span><span class="o">.</span><span class="n">update</span><span class="p">()</span>
+            <span class="n">link</span><span class="o">.</span><span class="n">length</span> <span class="o">=</span> <span class="o">-</span> <span class="n">link</span><span class="o">.</span><span class="n">l_stretch</span> <span class="c1"># This makes the length of the spring zero</span></div>
+</div>
+
+        
+
+<div class="viewcode-block" id="GASFilter">
+<a class="viewcode-back" href="../../index.html#gwsus.components.GASFilter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GASFilter</span><span class="p">(</span> <span class="n">RigidBody</span> <span class="p">,</span> <span class="n">InternalSprings</span> <span class="p">):</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">sus</span> <span class="p">,</span> <span class="n">name</span> <span class="p">,</span> <span class="n">data</span> <span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">):</span>
+        
+        <span class="n">RigidBody</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">,</span> <span class="n">sus</span> <span class="p">,</span> <span class="n">name</span> <span class="p">,</span> <span class="n">data</span> <span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span> <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">sus</span> <span class="o">=</span> <span class="n">sus</span>
+
+        <span class="c1"># self.f0 and self.beta must be in a list, even if they have only one element.</span>
+        <span class="c1"># It's a requirement for class InternalSprings</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">resonant_frequency</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f0</span> <span class="o">=</span> <span class="p">[</span><span class="n">d1</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">d1</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">d1</span> <span class="c1"># if d1 not a list or tuple take the value and put it in a list, otherwise keep it as a list or tuple.</span>
+        <span class="n">d2</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">saturation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="p">[</span><span class="n">d2</span><span class="p">]</span> <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">d2</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">d2</span>
+
+        <span class="c1"># The body the internal springs holds, i.e., the load of the GAS filter.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spring_body</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># To be updated ``suspension.connect``, used to calculate the spring load in method `update()   ` below</span>
+
+        <span class="c1"># Scalar quantifying the spring deformation in local coordinates </span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span> <span class="s1">'q'</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="p">,</span> <span class="n">real</span> <span class="o">=</span> <span class="kc">True</span> <span class="p">)</span> <span class="c1"># Scalar displacement quantifying the deformation of the spring</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vq</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">symbols</span><span class="p">(</span> <span class="s1">'vq'</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="p">,</span> <span class="n">real</span> <span class="o">=</span> <span class="kc">True</span> <span class="p">)</span> <span class="c1"># Velocity, used in Ek when the spring has mass</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">Matrix</span><span class="p">(</span> <span class="p">[</span> <span class="mi">0</span> <span class="p">,</span> <span class="mi">0</span> <span class="p">,</span> <span class="mi">1</span> <span class="p">]</span> <span class="p">)</span> <span class="c1"># Unit vector along which the motion is constrained in local coordinates</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">body_coords</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="p">)</span> <span class="c1"># Add parameter self.q to the list of body coordinates, the spring and the counterweight always have mass.</span>
+
+        <span class="c1"># if self.beta[0] == utils.con( 0 ): # A GAS filter has only one spring</span>
+        <span class="c1">#     print( f"{self.name}: massless spring with float coordinate q{self.name}, " , end="")</span>
+        <span class="c1">#     self.float_coords.append( self.q ) # Parameter added to the list of float coordinates</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#     print( f"{self.name}: spring with mass, " , end="")</span>
+        <span class="c1">#     self.body_coords.append( self.q ) # Parameter added to the list of body coordinates</span>
+
+        <span class="c1"># Two atachment points at the center</span>
+        <span class="n">name_center</span> <span class="o">=</span> <span class="p">[</span> <span class="n">name</span> <span class="k">for</span> <span class="p">(</span> <span class="n">name</span> <span class="p">,</span> <span class="n">coords</span> <span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">attachment_points_p</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="p">(</span> <span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">]</span> <span class="c1"># Extract the name of the points for which x=y=0</span>
+        
+        <span class="c1"># Identity the lower one from those two</span>
+        <span class="n">p0</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attachment_points_p</span><span class="p">[</span> <span class="n">name_center</span><span class="p">[</span> <span class="mi">0</span> <span class="p">]</span> <span class="p">]</span>
+        <span class="n">p1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attachment_points_p</span><span class="p">[</span> <span class="n">name_center</span><span class="p">[</span> <span class="mi">1</span> <span class="p">]</span> <span class="p">]</span>
+        <span class="k">if</span> <span class="n">p0</span><span class="p">[</span> <span class="mi">0</span> <span class="p">][</span> <span class="mi">2</span> <span class="p">]</span> <span class="o">&lt;</span> <span class="n">p1</span><span class="p">[</span> <span class="mi">0</span> <span class="p">][</span> <span class="mi">2</span> <span class="p">]</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_for_spring</span> <span class="o">=</span> <span class="n">name_center</span><span class="p">[</span> <span class="mi">0</span> <span class="p">]</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name_for_spring</span> <span class="o">=</span> <span class="n">name_center</span><span class="p">[</span> <span class="mi">1</span> <span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span> <span class="sa">f</span><span class="s2">"the attachment point at the lower end of the internal spring is called '</span><span class="si">{</span><span class="w"> </span><span class="bp">self</span><span class="o">.</span><span class="n">name_for_spring</span><span class="w"> </span><span class="si">}</span><span class="s2">'."</span><span class="p">)</span>
+        
+        <span class="c1"># For the attachment points of the spring, used in InternalSprings.__init__( self )</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="o">=</span> <span class="mi">1</span> <span class="c1"># Only one spring</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spr_r</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">attachment_points_r</span><span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_for_spring</span> <span class="p">]</span> <span class="c1"># List with the position vector of the spring, in global coordinates.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dir_p</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">q</span> <span class="p">]</span> <span class="c1"># List with direction vectors of the springs, in local coordinates.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dir_vp</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">vq</span> <span class="p">]</span> <span class="c1"># List with velocity vectors of the springs, in local coordinates.</span>
+
+        <span class="c1"># Initialize internal springs</span>
+        <span class="n">InternalSprings</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span>
+
+        <span class="c1"># Update the lower attachment point with the modifications from InternalSprings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">attachment_points_r</span><span class="p">[</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_for_spring</span> <span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">springs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">r_lower</span> <span class="c1"># self.springs only has one element in the GAS filter</span>
+
+<div class="viewcode-block" id="GASFilter.central_attachment_point_downstream">
+<a class="viewcode-back" href="../../index.html#gwsus.components.GASFilter.central_attachment_point_downstream">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">central_attachment_point_downstream</span><span class="p">():</span>
+        <span class="c1"># In class `GASFilter` return the one which is physically below. </span>
+        <span class="k">return</span></div>
+
+
+<div class="viewcode-block" id="GASFilter.update">
+<a class="viewcode-back" href="../../index.html#gwsus.components.GASFilter.update">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span> <span class="bp">self</span> <span class="p">):</span>
+
+        <span class="n">RigidBody</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span> <span class="c1"># Update per the parent class RigidBody, which updates the external link.</span>
+        
+        <span class="c1"># This is in the child class because tension=0 must be set for an IP but not for the GAS Filter.</span>
+        <span class="c1"># However, tension=0 might work for both if the stretched length of the springs is set to a</span>
+        <span class="c1"># constant value independent of the tension, as this calss is implemented from the begining.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spring_load</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spring_body</span><span class="o">.</span><span class="n">mass</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">spring_body</span><span class="o">.</span><span class="n">load</span>
+        <span class="k">for</span> <span class="n">link</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">springs</span><span class="p">:</span> <span class="n">link</span><span class="o">.</span><span class="n">tension</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">spring_load</span> <span class="o">*</span> <span class="n">utils</span><span class="o">.</span><span class="n">g</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="c1"># For an IP this tension must be set to zero</span>
+
+        <span class="n">InternalSprings</span><span class="o">.</span><span class="n">update</span><span class="p">(</span> <span class="bp">self</span> <span class="p">)</span></div>
+</div>
+
+        
+
+<div class="viewcode-block" id="InvertedPendulum">
+<a class="viewcode-back" href="../../index.html#gwsus.components.InvertedPendulum">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">InvertedPendulum</span><span class="p">(</span> <span class="n">GASFilter</span> <span class="p">):</span>
+    
+    <span class="c1"># * An Inverted Pendulum could be a horizontal GAS filter</span>
+    <span class="c1"># * The shape of the IP is defined in shapes3D.py and introduced in the simulation using a data class defined in a utils.py, lilely `InvertedPendulumData()`</span>
+    <span class="c1"># * What value must self.direction have?</span>
+    <span class="c1"># * Unlike in the `GASFilter` class, in the IP the attachment point that needs to be identified is the upper one, which is where the load is going to be attached.</span>
+
+<div class="viewcode-block" id="InvertedPendulum.central_attachment_point_downstream">
+<a class="viewcode-back" href="../../index.html#gwsus.components.InvertedPendulum.central_attachment_point_downstream">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">central_attachment_point_downstream</span><span class="p">():</span>
+        <span class="c1"># For the IP return the one which is physically above. </span>
+        <span class="k">return</span></div>
+
+
+    <span class="k">pass</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2026, Fabián Peña.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
