@@ -1,0 +1,65 @@
+.. Gwsus documentation master file, created by
+   sphinx-quickstart on Wed Nov  4 11:19:40 2026.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Gwsus documentation
+===================
+
+Add your content using ``reStructuredText`` syntax. See the
+`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
+documentation for details.
+
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents
+
+   installation
+   quickstart_guide
+   theory
+
+API Reference
+=============
+
+Calculations
+------------
+.. automodule:: gwsus.calculations
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Components
+----------
+.. automodule:: gwsus.components
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Animation
+---------
+.. automodule:: gwsus.anime
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Graphical representations
+-------------------------
+.. automodule:: gwsus.shapes3d
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Utilities
+---------
+.. automodule:: gwsus.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Materials
+---------
+.. automodule:: gwsus.materials
+   :members:
+   :undoc-members:
+   :show-inheritance:
