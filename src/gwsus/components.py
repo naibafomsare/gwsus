@@ -7,12 +7,25 @@ from . import shapes3d
 
 class Ground( bt.Node ):
     '''
-    This is the ground.
+    This is the ground component.
     '''
     
     names = ['lon' , 'tra' , 'ver' , 'roll' , 'pitch' , 'yaw'] # The same for all instances of derived classes 
+    '''Used to generate the symbolic variables of the coordinates of the body.'''
     
     def __init__( self , sus , name , data , **kwargs ):
+        '''
+        Initialize the instance.
+
+        Parameters
+        ----------
+        sus : gwsus.calculations.Suspension
+            The suspension instance the component belongs to.
+        name : str
+            Name of the ground component, typically ``GND``.
+        data : gwsus.utils.GroundData
+            Data class with the attachment point positions for the component direclty placed on or suspended from the ground. 
+        '''
         
         super().__init__(name=name, **kwargs) # Call bigtree node constructor
         self.name = name
@@ -21,13 +34,13 @@ class Ground( bt.Node ):
         self.load = 0 # Check whether utils.con(0) or None are better
 
         # Displacement symbolic variables
-        s = " ".join( [ item + self.name for item in RigidBody.names ] )
+        s = " ".join( [ item + self.name for item in Ground.names ] )
         self.lon, self.tra, self.ver , self.roll, self.pitch , self.yaw = se.symbols( s , real=True )
         self.r = se.Matrix( [ self.lon , self.tra , self.ver ] ) # A column vector
         self.angles = se.Matrix( [ self.roll , self.pitch , self.yaw ] ) # A column vector
 
-        # Write the displacement vectors of the attachment points w.r.t. the world reference system.
         self.attachment_points_r = {} 
+        '''Displacement vectors of the attachment points w.r.t. the world reference system.'''    
         for key , value in self.attachment_points_p.items(): # The key is the name of the set of  atachment points
             self.attachment_points_r[ key ] = [ self.r + utils.rotB2S( self ) * pp  for pp in value ]
 
@@ -37,7 +50,7 @@ class Ground( bt.Node ):
 
     
     def update( self ):            
-        # Calculate the load of the body
+        '''Calculate the load that the component carries in kilograms'''
         if not self.is_leaf:
             self.load = sum( (child.load+child.mass) for child in self.children )
 
@@ -64,13 +77,25 @@ class RigidBody( Ground ):
     """
     
     def __init__( self , sus , name , data , **kwargs ):
+        '''
+        Initialize the instance.
+
+        Parameters
+        ----------
+        sus : gwsus.calculations.Suspension
+            The suspension instance the component belongs to.
+        name : str
+            Abbreviated name of the rigid body.
+        data : gwsus.utils.BodyData
+            Data class with physical specification of the rigid body, including coordinates of attachment points w.r.t. the center of mass.
+        '''
         Ground.__init__( self , sus , name , data , **kwargs )
-        # self.sus = sus # The suspension the body belongs to, currently not in use.
+        # self.sus = sus # The suspension the body belongs to, currently not in use. Check whether it's necessary. 
         self.mass = data.mass 
         self.moi  = data.moi # Moment of inertia, se.Matrix
         self.shape = data.shape # Equals to the object definition itself
         self.shape_instance = None # It will be set to the object instance
-        self.link = None # Link instance the body couples with to its parent
+        self.link = None # Link instance the body couples with to its parent node
         self.link_internal = [] # Empty list for a rigid body
         
         # Velocity symbolic variables

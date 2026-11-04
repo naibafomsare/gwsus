@@ -275,6 +275,21 @@ assigning the total sum to <cite>self.link_torsion_Ep</cite>.</p>
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwsus.components.</span></span><span class="sig-name descname"><span class="pre">GASFilter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#GASFilter"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.GASFilter" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gwsus.components.RigidBody" title="gwsus.components.RigidBody"><code class="xref py py-class docutils literal notranslate"><span class="pre">RigidBody</span></code></a>, <a class="reference internal" href="#gwsus.components.InternalSprings" title="gwsus.components.InternalSprings"><code class="xref py py-class docutils literal notranslate"><span class="pre">InternalSprings</span></code></a></p>
 <dl class="py method">
+<dt class="sig sig-object py" id="gwsus.components.GASFilter.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#GASFilter.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.GASFilter.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sus</strong> (<a class="reference internal" href="#gwsus.calculations.Suspension" title="gwsus.calculations.Suspension"><em>gwsus.calculations.Suspension</em></a>) – The suspension instance the component belongs to.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Abbreviated name of the rigid body.</p></li>
+<li><p><strong>data</strong> (<a class="reference internal" href="#gwsus.utils.BodyData" title="gwsus.utils.BodyData"><em>gwsus.utils.BodyData</em></a>) – Data class with physical specification of the rigid body, including coordinates of attachment points w.r.t. the center of mass.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gwsus.components.GASFilter.central_attachment_point_downstream">
 <span class="sig-name descname"><span class="pre">central_attachment_point_downstream</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#GASFilter.central_attachment_point_downstream"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.GASFilter.central_attachment_point_downstream" title="Link to this definition"></a></dt>
 <dd></dd></dl>
@@ -282,7 +297,8 @@ assigning the total sum to <cite>self.link_torsion_Ep</cite>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="gwsus.components.GASFilter.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#GASFilter.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.GASFilter.update" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the load that the component carries in kilograms</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -290,16 +306,39 @@ assigning the total sum to <cite>self.link_torsion_Ep</cite>.</p>
 <dt class="sig sig-object py" id="gwsus.components.Ground">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwsus.components.</span></span><span class="sig-name descname"><span class="pre">Ground</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#Ground"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.Ground" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></p>
-<p>This is the ground.</p>
+<p>This is the ground component.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwsus.components.Ground.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#Ground.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.Ground.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sus</strong> (<a class="reference internal" href="#gwsus.calculations.Suspension" title="gwsus.calculations.Suspension"><em>gwsus.calculations.Suspension</em></a>) – The suspension instance the component belongs to.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Name of the ground component, typically <code class="docutils literal notranslate"><span class="pre">GND</span></code>.</p></li>
+<li><p><strong>data</strong> (<a class="reference internal" href="#gwsus.utils.GroundData" title="gwsus.utils.GroundData"><em>gwsus.utils.GroundData</em></a>) – Data class with the attachment point positions for the component direclty placed on or suspended from the ground.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="gwsus.components.Ground.attachment_points_r">
+<span class="sig-name descname"><span class="pre">attachment_points_r</span></span><a class="headerlink" href="#gwsus.components.Ground.attachment_points_r" title="Link to this definition"></a></dt>
+<dd><p>Displacement vectors of the attachment points w.r.t. the world reference system.</p>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="gwsus.components.Ground.names">
 <span class="sig-name descname"><span class="pre">names</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['lon',</span> <span class="pre">'tra',</span> <span class="pre">'ver',</span> <span class="pre">'roll',</span> <span class="pre">'pitch',</span> <span class="pre">'yaw']</span></span><a class="headerlink" href="#gwsus.components.Ground.names" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Used to generate the symbolic variables of the coordinates of the body.</p>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="gwsus.components.Ground.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#Ground.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.Ground.update" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the load that the component carries in kilograms</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -307,6 +346,11 @@ assigning the total sum to <cite>self.link_torsion_Ep</cite>.</p>
 <dt class="sig sig-object py" id="gwsus.components.InternalSprings">
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwsus.components.</span></span><span class="sig-name descname"><span class="pre">InternalSprings</span></span><a class="reference internal" href="_modules/gwsus/components.html#InternalSprings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.InternalSprings" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwsus.components.InternalSprings.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#InternalSprings.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.InternalSprings.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="gwsus.components.InternalSprings.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#InternalSprings.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.InternalSprings.update" title="Link to this definition"></a></dt>
@@ -360,9 +404,25 @@ assigning the total sum to <cite>self.link_torsion_Ep</cite>.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="gwsus.components.RigidBody.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#RigidBody.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.RigidBody.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sus</strong> (<a class="reference internal" href="#gwsus.calculations.Suspension" title="gwsus.calculations.Suspension"><em>gwsus.calculations.Suspension</em></a>) – The suspension instance the component belongs to.</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – Abbreviated name of the rigid body.</p></li>
+<li><p><strong>data</strong> (<a class="reference internal" href="#gwsus.utils.BodyData" title="gwsus.utils.BodyData"><em>gwsus.utils.BodyData</em></a>) – Data class with physical specification of the rigid body, including coordinates of attachment points w.r.t. the center of mass.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="gwsus.components.RigidBody.update">
 <span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#RigidBody.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.RigidBody.update" title="Link to this definition"></a></dt>
-<dd></dd></dl>
+<dd><p>Calculate the load that the component carries in kilograms</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -371,6 +431,12 @@ assigning the total sum to <cite>self.link_torsion_Ep</cite>.</p>
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwsus.components.</span></span><span class="sig-name descname"><span class="pre">Spring</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#Spring"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.Spring" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Parent class of <cite>Wire</cite>, <cite>Flexure</cite> and <cite>Direct</cite>. It is not directly usable, it is a template.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwsus.components.Spring.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#Spring.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.Spring.__init__" title="Link to this definition"></a></dt>
+<dd><p>sus is the suspension the wires belong to.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="gwsus.components.Spring.calculate_axial_Ep">
 <span class="sig-name descname"><span class="pre">calculate_axial_Ep</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#Spring.calculate_axial_Ep"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.Spring.calculate_axial_Ep" title="Link to this definition"></a></dt>
@@ -426,6 +492,12 @@ and for the animation of the wires.</p>
 <span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">gwsus.components.</span></span><span class="sig-name descname"><span class="pre">Wire</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#Wire"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.Wire" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#gwsus.components.Spring" title="gwsus.components.Spring"><code class="xref py py-class docutils literal notranslate"><span class="pre">Spring</span></code></a></p>
 <p>Currently only wires with circular cross sections are supported</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="gwsus.components.Wire.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sus</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#Wire.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.Wire.__init__" title="Link to this definition"></a></dt>
+<dd><p>sus is the suspension the wires belong to.</p>
+</dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="gwsus.components.Wire.calculate_axial_stiffness">
 <span class="sig-name descname"><span class="pre">calculate_axial_stiffness</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/gwsus/components.html#Wire.calculate_axial_stiffness"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#gwsus.components.Wire.calculate_axial_stiffness" title="Link to this definition"></a></dt>
