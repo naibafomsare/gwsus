@@ -71,6 +71,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+docs/build/ # added by Fabián on 05/11/2026
 
 # PyBuilder
 .pybuilder/
