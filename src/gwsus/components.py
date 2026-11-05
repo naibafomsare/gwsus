@@ -7,40 +7,66 @@ from . import shapes3d
 
 class Ground( bt.Node ):
     '''
-    This is the ground component.
+    This component represents the ground onto which the mechanical system is placed. Its position defines the origin of the suspension reference frame.
     '''
+    # Used to generate the symbolic variables of the coordinates of the body.
+    # The same for all instances of derived classes
+    _names = ['lon' , 'tra' , 'ver' , 'roll' , 'pitch' , 'yaw']  
     
-    names = ['lon' , 'tra' , 'ver' , 'roll' , 'pitch' , 'yaw'] # The same for all instances of derived classes 
-    '''Used to generate the symbolic variables of the coordinates of the body.'''
+    # def __init__( self , sus , name , data , **kwargs ): # Modified on 05/11/2026; delete block if no error is detected later.
+    # '''
+    # Parameters
+    # ----------
+    # sus : gwsus.calculations.Suspension
+    #     Suspension the component belongs to.
+    # '''
     
-    def __init__( self , sus , name , data , **kwargs ):
+    def __init__( self , name , data , **kwargs ):
         '''
         Initialize the instance.
 
         Parameters
         ----------
-        sus : gwsus.calculations.Suspension
-            The suspension instance the component belongs to.
         name : str
-            Name of the ground component, typically ``GND``.
+            Abbreviated name of the ground component, typically ``GND``.
         data : gwsus.utils.GroundData
-            Data class with the attachment point positions for the component direclty placed on or suspended from the ground. 
+            Data class with the attachment point displacement vectors. 
         '''
         
         super().__init__(name=name, **kwargs) # Call bigtree node constructor
         self.name = name
         
         self.attachment_points_p = data.pos # w.r.t. the center of mass
+        '''
+        Dictionary with the displacement vectors of the attachment points, grouped by function and expressed w.r.t. the local reference frame at the suspenion origin in the case of the ground or at the center of mass in the case of children classes.
+        
+        * Key: name of the attachment point set, e.g., ``'for_IRM'``, ``'for_MIR'``, ``'for_F1'``, etc.
+        * Value: list of column vectors, with the number of vectors depending on the number of attachment points needed, e.g., for the mirror four are needed whereas for a GAS filter only one.
+        * Provided by the parameter **data**.
+        * For internal use but accesible for user inspection.
+        '''
+
+        
         self.load = 0 # Check whether utils.con(0) or None are better
 
         # Displacement symbolic variables
-        s = " ".join( [ item + self.name for item in Ground.names ] )
+        s = " ".join( [ item + self.name for item in Ground._names ] )
         self.lon, self.tra, self.ver , self.roll, self.pitch , self.yaw = se.symbols( s , real=True )
-        self.r = se.Matrix( [ self.lon , self.tra , self.ver ] ) # A column vector
-        self.angles = se.Matrix( [ self.roll , self.pitch , self.yaw ] ) # A column vector
+        
+        self.r : se.Matrix = se.Matrix( [ self.lon , self.tra , self.ver ] ) # A column vector
+        '''Null column vector in the case of the ground and column vector with the symbolic coordinates of the center of mass in the case of children classes.'''
+        
+        self.angles : se.Matrix = se.Matrix( [ self.roll , self.pitch , self.yaw ] ) # A column vector
+        '''Null column vector in the case of the ground and column vector with the symbolic angles determining the orientation of the body in the case of children classes.'''
 
-        self.attachment_points_r = {} 
-        '''Displacement vectors of the attachment points w.r.t. the world reference system.'''    
+        self.attachment_points_r : dict[str, list[se.Matrix]] = {} 
+        '''
+        Dictionary with the displacement vectors of the attachment points, grouped by function and expressed w.r.t. the suspension reference frame defined by the ground.
+        
+        * Key: name of the attachment point set, e.g., ``'for_IRM'``, ``'for_MIR'``, ``'for_F1'``, etc.
+        * Value: list of column vectors, with the number of vectors depending on the number of attachment points needed, e.g., for the mirror four are needed whereas for a GAS filter only one.
+        * For internal use but accesible for user inspection.
+        '''
         for key , value in self.attachment_points_p.items(): # The key is the name of the set of  atachment points
             self.attachment_points_r[ key ] = [ self.r + utils.rotB2S( self ) * pp  for pp in value ]
 
@@ -50,46 +76,37 @@ class Ground( bt.Node ):
 
     
     def update( self ):            
-        '''Calculate the load that the component carries in kilograms'''
+        '''Calculate the load that the component supports in kilograms'''
         if not self.is_leaf:
             self.load = sum( (child.load+child.mass) for child in self.children )
 
 
 class RigidBody( Ground ):
     """
-    A short description.
-
-    A more wordy description.
-
-    Attributes
-    ----------
-    attachment_points_p : dict
-        A dictionary containing the displacement vectors of the attachment points written in body coordinates w.r.t. the body's center of mass.
-        *   Each key is the name (str) of the attachment point set (e.g., "for_IM", "for_MIR").
-        *   Each value is a list of column vectors defined as $3 \times 1$ Symengine's MutableDenseMatrix matrices with numeric entries.
-        *   For internal use, but accesible for user's inspection.
-        
-    attachment_points_r : dict
-        A dictionary containing the displacement vectors of the attachment points written in world coordinates w.r.t. the origin of the world reference frame.
-        *   Each key is the name (str) of the attachment point set (e.g., "for_IM", "for_MIR").
-        *   Each value is a list of column vectors defined as $3 \times 1$ Symengine's MutableDenseMatrix matrices with symbolic entries.
-        *   For internal use, but accesible for user's inspection.
+    A description.
     """
     
-    def __init__( self , sus , name , data , **kwargs ):
+    # def __init__( self , sus , name , data , **kwargs ): # Modified on 05/11/2026; delete block if no error is detected later.
+    # '''
+    # Parameters
+    # ----------
+    # sus : gwsus.calculations.Suspension
+    #     Suspension the component belongs to.
+    # '''
+
+    def __init__( self , name , data , **kwargs ):
         '''
         Initialize the instance.
 
         Parameters
         ----------
-        sus : gwsus.calculations.Suspension
-            The suspension instance the component belongs to.
         name : str
-            Abbreviated name of the rigid body.
+            Abbreviated name of the rigid body, e.g., ``MIR``, ``RM``, ``IM``, ``IRM``, etc.
         data : gwsus.utils.BodyData
             Data class with physical specification of the rigid body, including coordinates of attachment points w.r.t. the center of mass.
         '''
-        Ground.__init__( self , sus , name , data , **kwargs )
+        # Ground.__init__( self , sus , name , data , **kwargs ) # Modified on 05/11/2026; delete line if not error is detected
+        Ground.__init__( self , name , data , **kwargs )
         # self.sus = sus # The suspension the body belongs to, currently not in use. Check whether it's necessary. 
         self.mass = data.mass 
         self.moi  = data.moi # Moment of inertia, se.Matrix
@@ -99,7 +116,7 @@ class RigidBody( Ground ):
         self.link_internal = [] # Empty list for a rigid body
         
         # Velocity symbolic variables
-        s = " ".join( [ 'v' + item + self.name for item in RigidBody.names ] )
+        s = " ".join( [ 'v' + item + self.name for item in RigidBody._names ] )
         self.vlon, self.vtra, self.vver , self.vroll, self.vpitch , self.vyaw = se.symbols( s , real=True )
         self.v = se.Matrix( [ self.vlon , self.vtra , self.vver ] ) # A column vector
         vangles = se.Matrix( [ self.vroll , self.vpitch , self.vyaw ] ) # A column vector
@@ -143,7 +160,7 @@ class Spring:
         '''
         sus is the suspension the wires belong to.
         '''
-        self.sus = sus # The suspension the link belongs to, used in class `Wire` in method `calculate_torsion_Ep`.
+        self.sus = sus # The suspension the link belongs to, used in class `Wire` in method `calculate_torsion_Ep`. Aim to set this value in method `connect` instead.
         self.shape = None
         self.damp_factor = 1 + se.I * data.loss_angle
 

@@ -1,8 +1,8 @@
 Installation instructions
 =========================
 
-These are some nice instructions
+In a terminal write this:
 
 .. code-block:: none
 
-        code to write
+        python -m pip install https://github.com/naibafomsare/gwsus/archive/refs/heads/main.zip

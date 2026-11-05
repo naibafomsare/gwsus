@@ -34,6 +34,9 @@ extensions = [
 autosummary_generate = True
 napoleon_numpy_docstring = True
 
+# Force Sphinx to display members in the order they appear in the source code
+autodoc_member_order = 'bysource'
+
 templates_path = ['_templates']
 exclude_patterns = []
 
@@ -43,5 +46,16 @@ exclude_patterns = []
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 # html_theme = 'alabaster'
-html_theme = "sphinx_rtd_theme"
+# html_theme = "sphinx_rtd_theme"
+html_theme = "furo"
+
+# html_theme_options = {
+#    "light_logo": "logo-light.png",
+#    "dark_logo": "logo-dark.png",
+#    "sidebar_hide_name": False,
+#    "navigation_with_keys": True,
+#    "announcement": "📢 New release: 2.0.0 is out!",
+# }
+
+
 html_static_path = ['_static']
