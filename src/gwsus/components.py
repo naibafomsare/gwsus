@@ -83,7 +83,7 @@ class Ground( bt.Node ):
 
 class RigidBody( Ground ):
     """
-    A description.
+    This class is for representing bodies without internal springs, e.g., mirrors, intermediate masses and their respective recoil masses.
     """
     
     # def __init__( self , sus , name , data , **kwargs ): # Modified on 05/11/2026; delete block if no error is detected later.
@@ -108,41 +108,59 @@ class RigidBody( Ground ):
         # Ground.__init__( self , sus , name , data , **kwargs ) # Modified on 05/11/2026; delete line if not error is detected
         Ground.__init__( self , name , data , **kwargs )
         # self.sus = sus # The suspension the body belongs to, currently not in use. Check whether it's necessary. 
-        self.mass = data.mass 
-        self.moi  = data.moi # Moment of inertia, se.Matrix
-        self.shape = data.shape # Equals to the object definition itself
-        self.shape_instance = None # It will be set to the object instance
-        self.link = None # Link instance the body couples with to its parent node
+        self.mass : se.Rational = data.mass
+        '''Body mass'''
+        
+        self.moi : se.Matrix  = data.moi
+        '''Moment of inertia'''
+                        
+        self.link : gwsus.components.Wire = None 
+        '''Link instance the body couples with to its parent node'''
+
         self.link_internal = [] # Empty list for a rigid body
         
         # Velocity symbolic variables
         s = " ".join( [ 'v' + item + self.name for item in RigidBody._names ] )
         self.vlon, self.vtra, self.vver , self.vroll, self.vpitch , self.vyaw = se.symbols( s , real=True )
-        self.v = se.Matrix( [ self.vlon , self.vtra , self.vver ] ) # A column vector
+        
+        self.v : se.Matrix = se.Matrix( [ self.vlon , self.vtra , self.vver ] )
+        '''Column vector with the symbolic velocities w.r.t. the suspension reference frame.'''
+        
         vangles = se.Matrix( [ self.vroll , self.vpitch , self.vyaw ] ) # A column vector
-        self.omega = se.Matrix( [ [ 1 ,  0                   , -se.sin( self.pitch )                       ] ,
+        '''Column vector with the symbolic velocities in roll, pitch and yaw.'''
+        
+        self.omega : se.Matrix = se.Matrix( [ [ 1 ,  0                   , -se.sin( self.pitch )                       ] ,
                                   [ 0 ,  se.cos( self.roll ) ,  se.sin( self.roll ) * se.cos( self.pitch ) ] , 
                                   [ 0 , -se.sin( self.roll ) ,  se.cos( self.roll ) * se.cos( self.pitch ) ] ] ) * vangles
+        '''Column vector with the symbolic angular velocities w.r.t. the suspension reference frame.'''
+        
 
         self.body_coords = self.gnd_coords # Override the assignment given in parent class ``Ground``
         self.gnd_coords = []
         
-        # Gravitational potential energy
-        self.grav_Ep = self.mass * utils.g * self.ver
+        self.grav_Ep : se.lib.symengine_wrapper.Mul = self.mass * utils.g * self.ver
+        '''Gravitational potential energy'''
         
-        # Kinetic energy
-        self.Ek = se.Rational(1,2) * ( self.mass * self.v.dot( self.v ) + self.omega.T.dot( self.moi * self.omega ) )
+        self.Ek : se.lib.symengine_wrapper.Mul = se.Rational(1,2) * ( self.mass * self.v.dot( self.v ) + self.omega.T.dot( self.moi * self.omega ) )
+        '''Kinetic energy'''
+
+        self.shape : type[ gwsus.shapes3d.BasicBodyShape ] = data.shape 
+        '''Equals to the definition of the VPython 3D object class, not to an instance of the class.'''
         
+        self.shape_instance : gwsus.shapes3d.BasicBodyShape = None # It will be set to the object instance
+        '''Equals to the instance of the VPython 3D object class.'''
+
         # Orientation of the body and its links for animation
         self.orien_lambda = None
         self.orienw_lambda = None
 
     def update( self ):
-        
+        '''
+        Calculate the load of the body and the load of the link or links the body hangs from. 
+        '''
         super().update()
         
-        # Calculate the load of the external link
-        # if not self.is_root: # Ground excluded because it is not supported by a link
+        # Calculate the load of the link the body hangs from
         link = self.link
         link.load = self.mass + self.load 
         link.load_single = link.load / link.num # Load of individual links of the set of links
@@ -219,16 +237,13 @@ class Spring:
         print( 'vlength spring:' , float(self.vlength) ) ####################################################################################################33
 
     def calculate_geometry( self ):
-        """
-        Calculates the vector differences between attachment points and their norms.
-
-        These quantities are required to calculate the axial and torsional potential energies,
+        '''
+        Calculate the vector differences between attachment points and their norms, which are required for the axial and torsional potential energies
         and for the animation of the wires.
 
-        Notes
-        -----
-        Can be called after `suspension.connect`, and therefore, it's called in `suspension.update` via `link.update`.
-        """
+        * Can be called after ``suspension.connect()``.
+        * It is called in ``suspension.update()`` via ``link.update()``.
+        '''
         for index in range( self.num ):
             
             r_diff = self.r_upper[ index ] - self.r_lower[ index ] # This vector points upwards
