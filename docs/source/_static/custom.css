@@ -1,0 +1,39 @@
+/* Filled frame suitable for Furo's dark theme */
+div.filled-frame {
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: 0.6rem;
+    background-color: var(--color-background-secondary);
+    border: 1px solid var(--color-foreground-border);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+div.filled-frame > :first-child {
+    margin-top: 0;
+}
+
+div.filled-frame > :last-child {
+    margin-bottom: 0;
+}
+
+/* Under-construction notice */
+div.construction-notice {
+    padding: 1rem 1.25rem;
+    margin: 1.5rem 0;
+    border-radius: 0.6rem;
+
+    /* Muted blue for Furo's dark theme */
+    background-color: #253442;
+    border: 1px solid #49647a;
+
+    color: #dce6ef;
+    text-align: center;
+}
+
+div.construction-notice p {
+    margin: 0.3rem 0;
+}
+
+div.construction-notice strong {
+    color: #a9cbea;
+}

@@ -1,5 +1,5 @@
-Gwsus Examples
-==============
+Examples
+========
 
 This gallery contains examples demonstrating how to use the Gwsus
 package.

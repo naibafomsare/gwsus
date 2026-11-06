@@ -38,6 +38,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sphinx_gallery_conf = {
     "examples_dirs": str(ROOT / "examples"),
     "gallery_dirs": "auto_examples",
+    "within_subsection_order": "FileNameSortKey",
 }
 
 
@@ -59,13 +60,9 @@ exclude_patterns = []
 # html_theme = "sphinx_rtd_theme"
 html_theme = "furo"
 
-# html_theme_options = {
-#    "light_logo": "logo-light.png",
-#    "dark_logo": "logo-dark.png",
-#    "sidebar_hide_name": False,
-#    "navigation_with_keys": True,
-#    "announcement": "📢 New release: 2.0.0 is out!",
-# }
-
 
 html_static_path = ['_static']
+
+html_css_files = [
+    "custom.css",
+]

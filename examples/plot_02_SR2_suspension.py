@@ -1,7 +1,12 @@
 """
-======================
-Rigid bodies and wires
-======================
+===========
+Suspensions
+===========
+
+.. container:: construction-notice
+
+    **🛠️⛏️ Documentation under construction**   
+    This section is incomplete and subject to change.
 
 This is the main title and introduction of your tutorial. 
 You can use reStructuredText or Markdown formatting here.

@@ -17,6 +17,5 @@ documentation for details.
 
    installation
    auto_examples/index
-   quickstart_guide
    theory
    api

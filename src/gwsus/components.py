@@ -67,8 +67,10 @@ class Ground( bt.Node ):
         * Value: list of column vectors, with the number of vectors depending on the number of attachment points needed, e.g., for the mirror four are needed whereas for a GAS filter only one.
         * For internal use but accesible for user inspection.
         '''
+        # -- start-logic-tag --
         for key , value in self.attachment_points_p.items(): # The key is the name of the set of  atachment points
             self.attachment_points_r[ key ] = [ self.r + utils.rotB2S( self ) * pp  for pp in value ]
+        # -- end-logic-tag --
 
         self.body_coords = []
         self.float_coords = []
@@ -128,11 +130,13 @@ class RigidBody( Ground ):
         
         vangles = se.Matrix( [ self.vroll , self.vpitch , self.vyaw ] ) # A column vector
         '''Column vector with the symbolic velocities in roll, pitch and yaw.'''
-        
+
+        # -- start-logic-tag-angular-velocity --
         self.omega : se.Matrix = se.Matrix( [ [ 1 ,  0                   , -se.sin( self.pitch )                       ] ,
                                   [ 0 ,  se.cos( self.roll ) ,  se.sin( self.roll ) * se.cos( self.pitch ) ] , 
                                   [ 0 , -se.sin( self.roll ) ,  se.cos( self.roll ) * se.cos( self.pitch ) ] ] ) * vangles
-        '''Column vector with the symbolic angular velocities w.r.t. the suspension reference frame.'''
+        # -- end-logic-tag-angular-velocity --
+        '''Angular velocity column vector, expressed w.r.t. the suspension reference frame and in terms of roll, pitch and yaw symbolic variables.'''
         
 
         self.body_coords = self.gnd_coords # Override the assignment given in parent class ``Ground``
