@@ -16,6 +16,7 @@ documentation for details.
    :caption: Contents
 
    installation
+   auto_examples/index
    quickstart_guide
    theory
    api

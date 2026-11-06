@@ -30,7 +30,17 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
+    "sphinx_gallery.gen_gallery",
 ]
+
+ROOT = Path(__file__).resolve().parents[2]
+
+sphinx_gallery_conf = {
+    "examples_dirs": str(ROOT / "examples"),
+    "gallery_dirs": "auto_examples",
+}
+
+
 autosummary_generate = True
 napoleon_numpy_docstring = True
 
