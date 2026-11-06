@@ -111,6 +111,7 @@ class Suspension:
         body_upper >> body_lower # Connects the bodies with Bigtree
         self.root = body_upper.root # To allow finding the overall root
         body_lower.link = link # By practice in Bigtree, the link instance is kept with the lower body
+        link.sus = self # The link knows what suspension it belongs to. Used in class `Wire` in method `calculate_torsion_Ep`.
 
         for index in range( link.num ): # For each individual link in the set of links
             link.r_upper.append( body_upper.attachment_points_r[ name_point_upper ][ index ] ) # Upper attachment points

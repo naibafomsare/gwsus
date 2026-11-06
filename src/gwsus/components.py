@@ -176,44 +176,77 @@ class RigidBody( Ground ):
 
 class Spring:
     """
-    Parent class of `Wire`, `Flexure` and `Direct`. It is not directly usable, it is a template.
-    """
-    def __init__( self , sus , data ):
-        '''
-        sus is the suspension the wires belong to.
-        '''
-        self.sus = sus # The suspension the link belongs to, used in class `Wire` in method `calculate_torsion_Ep`. Aim to set this value in method `connect` instead.
-        self.shape = None
-        self.damp_factor = 1 + se.I * data.loss_angle
+    Implementation of springs.
+    
+    * It is defined as a set of springs, where there can be one spring or more.
+    
+    * It is parent class for ``Wire``, whose instances typically have one, three or four wires.
 
-        self.num = data.number
-        self.k_axial = data.k_axial
-        self.k_torsion = data.k_torsion
-        self.length = data.length # Unstretched length
-        self.shape = shapes3d.SpringShape
+    * Springs and wires are generically called *links*.
+    
+    * **Check whether it is directly usable or only a parent class for ``Wire``.**
+    """
+    def __init__( self , data ):
+        '''
+        Initialize the instance.
+
+        Parameters
+        ----------
+        data : gwsus.utils.SpringData
+            Data class with the physical specification of the spring.
+        '''
+        self.shape = None
+        self.damp_factor : symengine.lib.symengine_wrapper.Complex = 1 + se.I * data.loss_angle
+        '''Complex factor that mutiplies the real-value spring constant and introduces structural damping.'''
+
+        self.num : int = data.number
+        '''Number of individual links in the set'''
+        
+        self.k_axial : symengine.lib.symengine_wrapper.Mul = data.k_axial
+        '''Spring constant along the length of an individual link'''
+        
+        self.k_torsion : symengine.lib.symengine_wrapper.Mul = data.k_torsion
+        '''Torsional spring constant of an individual link'''
+        
+        self.length : symengine.lib.symengine_wrapper.Rational = data.length # Unstretched length
+        '''Unstretched length'''
+        
+        self.shape : gwsus.shapes3d.SpringShape = shapes3d.SpringShape
+        '''Equals to the definition of the VPython 3D object class, not to an instance of the class.'''
+        
 
         self.load = None # Load of the set of springs. In `Spring` and `Wire` used only for printing information on the screen. 
         self.load_single = None # Load of the individual springs. In `Spring` and `Wire` used only for printing information on the screen.
         self.tension = None  # Tension in individual springs
          
         # To be updated by method `calculate_stretched_length` in this class.
-        self.l_stretch : float = 0  # Total stretched length of wire.
+        self.l_stretch : symengine.lib.symengine_wrapper.Add = utils.con( 0 )  # Total stretched length of wire.
         
         # Vertical length of the link in equilibrium. Used only to guess the vertical equilibrium positions of the bodies in method `supension.guess_equi_coords`.
         # It must either be given or calculated in a method.In class `Wire`, in method `calculate_stretched_length`, it's set equal to the stretched length assuming
         # the wire is vertical in equilibrium. When it's not vertical an angle is needed, but this hasn't been implemented yet.
         self.vlength = utils.con(0) # Default value
+        '''Vertical length of the link in equilibrium. Used only to guess the vertical equilibrium positions of the bodies in method ``supension.guess_equi_coords()``.'''
 
+        
         #----- To be updated by `suspension.connect` method --------# 
-        self.r_upper = [] # List with position vectors of the upper attachment points, also in dict `self.body.attachment_points_r`, but gathered here for ease of access.
-        self.r_lower = [] # List with position vectors of the lower attachment points, also in dict `self.body.attachment_points_r`, but gathered here for ease of access.
+        
+        self.r_upper : list = []
+        '''List with position vectors of the upper attachment points. Also in the upper body's dictionary ``attachment_points_r``, but gathered here for ease of access. Updated in method ``suspension.connect()``.'''
+        
+        self.r_lower : list = []
+        '''List with position vectors of the lower attachment points. Also in the lower body's dictionary ``attachment_points_r``, but gathered here for ease of access. Updated in method ``suspension.connect()``.'''
+        
         self.angles_lower = None
         self.angles_upper = None
         # self.body = None # Write here why we need this.
         
         # For calculating the axial and torsional potential energies, and for the animation. To be updated in method `calculate_geometry`
-        self.r_diff = [] # List with vectors `self.r_upper - self.r_lower`, i.e., vectors point upwards.
-        self.norm_diff = [] # List with the norms of the elements of `self.r_diff`.
+        self.r_diff : list = []
+        '''List with vectors ``self.r_upper - self.r_lower``, i.e., vectors point upwards.'''
+        
+        self.norm_diff : list = []
+        '''List with the norms of the elements of ``self.r_diff``.'''
 
         # Elastic potential energy dictionary
         self.Ep_dict = {'axial': { 'damp' : self.damp_factor , 'energy'  : utils.con(0) , 'master' : None } ,
@@ -221,8 +254,10 @@ class Spring:
                         'bend'     : { 'damp' : utils.con(0) , 'energy'  : utils.con(0) , 'master' : None } }
 
     def update( self ):
-        """
-        """
+        '''
+        * Call the method ``calculate_stretched_length()``. 
+        * Call the method ``calculate_geometry()``.
+        '''
         # `calculate.stretched_length` in only useful in this class for
         # guessing equilibrium values. In derived class `Wire` it is overriden.
         self.calculate_stretched_length() 
@@ -231,7 +266,7 @@ class Spring:
 
     def calculate_stretched_length( self ):
         """
-        L0 and k are scalars, not numpy arrays
+        L0 and k are scalars, not numpy arrays.
         """
         T = self.tension     # Tension in the individual wire
         L0 = self.length     # Unstretched original length 
@@ -246,6 +281,7 @@ class Spring:
         and for the animation of the wires.
 
         * Can be called after ``suspension.connect()``.
+        
         * It is called in ``suspension.update()`` via ``link.update()``.
         '''
         for index in range( self.num ):
@@ -258,6 +294,9 @@ class Spring:
 
     # Currently not in use
     def calculate_bending_Ep( self ):
+        '''
+        Calculate the bending potential energy. This funtion has not been implemented yet.
+        '''
         return utils.con(0) # Symbolic zero
 
     # Method currently used for derived classes `Wire` and `Spring`.
@@ -268,7 +307,7 @@ class Spring:
     #
     def calculate_axial_Ep( self ):
         '''
-        Calculate elastic potential energy
+        Calculate elastic potential energy.
         '''
         add = 0
         for index in range( self.num ):
@@ -284,9 +323,9 @@ class Spring:
     #     return utils.con(0) # Symbolic zero
     #
     def calculate_torsion_Ep( self ):
-        """
-        Requires knowledge of the equlibrium positions.
-        """
+        '''
+        Calculate the torsional elastic potential energy. It requires knowledge of the equlibrium positions.
+        '''
         add = 0
         angles_diff = self.angles_upper - self.angles_lower
         for index in range( self.num ) :
@@ -315,9 +354,16 @@ class Wire( Spring ):
     '''
     Currently only wires with circular cross sections are supported
     '''
-    def __init__( self , sus , data ):
-        
-        Spring.__init__( self , sus , data )
+    def __init__( self , data ):
+        '''
+        Initialize the instance.
+
+        Parameters
+        ----------
+        data : gwsus.utils.WireData
+            Data class with the physical specification of the wire.
+        '''
+        Spring.__init__( self , data )
         self.num = data.number # Overriding the default value of 1 set in parent class
         self.material : str = data.material
 
