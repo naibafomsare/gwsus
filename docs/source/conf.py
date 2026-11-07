@@ -51,6 +51,12 @@ autodoc_member_order = 'bysource'
 templates_path = ['_templates']
 exclude_patterns = []
 
+autodoc_default_options = {
+#    "members": True,
+#    "undoc-members": True,
+    "special-members": "__post_init__",
+    "show-inheritance": True,
+}
 
 
 # -- Options for HTML output -------------------------------------------------

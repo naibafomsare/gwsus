@@ -7,7 +7,9 @@ from . import shapes3d
 
 class Ground( bt.Node ):
     '''
-    This component represents the ground onto which the mechanical system is placed. Its position defines the origin of the suspension reference frame.
+    This component represents the ground onto which the mechanical
+    system is placed. Its position defines the origin of the suspension
+    reference frame.
     '''
     # Used to generate the symbolic variables of the coordinates of the body.
     # The same for all instances of derived classes
@@ -38,10 +40,16 @@ class Ground( bt.Node ):
         
         self.attachment_points_p = data.pos # w.r.t. the center of mass
         '''
-        Dictionary with the displacement vectors of the attachment points, grouped by function and expressed w.r.t. the local reference frame at the suspenion origin in the case of the ground or at the center of mass in the case of children classes.
+        Dictionary with the displacement vectors of the attachment points,
+        grouped by function and expressed w.r.t. the local reference frame
+        at the suspension origin in the case of the ground, or at the center
+        of mass in the case of children classes.
         
-        * Key: name of the attachment point set, e.g., ``'for_IRM'``, ``'for_MIR'``, ``'for_F1'``, etc.
-        * Value: list of column vectors, with the number of vectors depending on the number of attachment points needed, e.g., for the mirror four are needed whereas for a GAS filter only one.
+        * Key: name of the attachment point set, e.g., ``'for_IRM'``, ``'for_MIR'``,
+        ``'for_F1'``, etc.
+        * Value: list of column vectors, with the number of vectors depending on the
+        number of attachment points needed, e.g., for the mirror four are needed
+        whereas for a GAS filter only one.
         * Provided by the parameter **data**.
         * For internal use but accesible for user inspection.
         '''
@@ -54,17 +62,25 @@ class Ground( bt.Node ):
         self.lon, self.tra, self.ver , self.roll, self.pitch , self.yaw = se.symbols( s , real=True )
         
         self.r : se.Matrix = se.Matrix( [ self.lon , self.tra , self.ver ] ) # A column vector
-        '''Null column vector in the case of the ground and column vector with the symbolic coordinates of the center of mass in the case of children classes.'''
+        '''Null column vector in the case of the ground and column vector
+        with the symbolic coordinates of the center of mass in the case of children classes.'''
         
         self.angles : se.Matrix = se.Matrix( [ self.roll , self.pitch , self.yaw ] ) # A column vector
-        '''Null column vector in the case of the ground and column vector with the symbolic angles determining the orientation of the body in the case of children classes.'''
+        '''Null column vector in the case of the ground and column vector
+        with the symbolic angles determining the orientation of the body
+        in the case of children classes.'''
 
         self.attachment_points_r : dict[str, list[se.Matrix]] = {} 
         '''
-        Dictionary with the displacement vectors of the attachment points, grouped by function and expressed w.r.t. the suspension reference frame defined by the ground.
+        Dictionary with the displacement vectors of the attachment points,
+        grouped by function and expressed w.r.t. the suspension reference
+        frame defined by the ground.
         
-        * Key: name of the attachment point set, e.g., ``'for_IRM'``, ``'for_MIR'``, ``'for_F1'``, etc.
-        * Value: list of column vectors, with the number of vectors depending on the number of attachment points needed, e.g., for the mirror four are needed whereas for a GAS filter only one.
+        * Key: name of the attachment point set, e.g., ``'for_IRM'``, ``'for_MIR'``,
+        ``'for_F1'``, etc.
+        * Value: list of column vectors, with the number of vectors depending on the
+        number of attachment points needed, e.g., for the mirror four are needed
+        whereas for a GAS filter only one.
         * For internal use but accesible for user inspection.
         '''
         # -- start-logic-tag --
@@ -85,7 +101,8 @@ class Ground( bt.Node ):
 
 class RigidBody( Ground ):
     """
-    This class is for representing bodies without internal springs, e.g., mirrors, intermediate masses and their respective recoil masses.
+    This class is for representing bodies without internal springs, e.g.,
+    mirrors, intermediate masses and their respective recoil masses.
     """
     
     # def __init__( self , sus , name , data , **kwargs ): # Modified on 05/11/2026; delete block if no error is detected later.
@@ -103,9 +120,11 @@ class RigidBody( Ground ):
         Parameters
         ----------
         name : str
-            Abbreviated name of the rigid body, e.g., ``MIR``, ``RM``, ``IM``, ``IRM``, etc.
+            Abbreviated name of the rigid body, e.g., ``MIR``, ``RM``,
+            ``IM``, ``IRM``, etc.
         data : gwsus.utils.BodyData
-            Data class with physical specification of the rigid body, including coordinates of attachment points w.r.t. the center of mass.
+            Data class with physical specification of the rigid body,
+            including coordinates of attachment points w.r.t. the center of mass.
         '''
         # Ground.__init__( self , sus , name , data , **kwargs ) # Modified on 05/11/2026; delete line if not error is detected
         Ground.__init__( self , name , data , **kwargs )
@@ -136,7 +155,8 @@ class RigidBody( Ground ):
                                   [ 0 ,  se.cos( self.roll ) ,  se.sin( self.roll ) * se.cos( self.pitch ) ] , 
                                   [ 0 , -se.sin( self.roll ) ,  se.cos( self.roll ) * se.cos( self.pitch ) ] ] ) * vangles
         # -- end-logic-tag-angular-velocity --
-        '''Angular velocity column vector, expressed w.r.t. the suspension reference frame and in terms of roll, pitch and yaw symbolic variables.'''
+        '''Angular velocity column vector, expressed w.r.t. the suspension
+        reference frame and in terms of roll, pitch and yaw symbolic variables.'''
         
 
         self.body_coords = self.gnd_coords # Override the assignment given in parent class ``Ground``
@@ -149,7 +169,8 @@ class RigidBody( Ground ):
         '''Kinetic energy'''
 
         self.shape : type[ gwsus.shapes3d.BasicBodyShape ] = data.shape 
-        '''Equals to the definition of the VPython 3D object class, not to an instance of the class.'''
+        '''Equals to the definition of the VPython 3D object class, not to
+        an instance of the class.'''
         
         self.shape_instance : gwsus.shapes3d.BasicBodyShape = None # It will be set to the object instance
         '''Equals to the instance of the VPython 3D object class.'''
@@ -160,7 +181,8 @@ class RigidBody( Ground ):
 
     def update( self ):
         '''
-        Calculate the load of the body and the load of the link or links the body hangs from. 
+        Calculate the load of the body and the load of the link or
+        links the body hangs from. 
         '''
         super().update()
         
@@ -178,11 +200,10 @@ class Spring:
     """
     Implementation of springs.
     
-    * It is defined as a set of springs, where there can be one spring or more.
-    
-    * It is parent class for ``Wire``, whose instances typically have one, three or four wires.
-
-    * Springs and wires are generically called *links*.
+    An instance represents a set of springs, where there can be
+    only one spring. It is the parent class for ``Wire``, whose
+    instances typically have one, three or four wires. Springs
+    and wires are generically called *links*.
     
     * **Check whether it is directly usable or only a parent class for ``Wire``.**
     """
@@ -197,7 +218,8 @@ class Spring:
         '''
         self.shape = None
         self.damp_factor : symengine.lib.symengine_wrapper.Complex = 1 + se.I * data.loss_angle
-        '''Complex factor that mutiplies the real-value spring constant and introduces structural damping.'''
+        '''Complex factor that mutiplies the real-value spring constant and introduces
+        structural damping.'''
 
         self.num : int = data.number
         '''Number of individual links in the set'''
@@ -212,7 +234,8 @@ class Spring:
         '''Unstretched length'''
         
         self.shape : gwsus.shapes3d.SpringShape = shapes3d.SpringShape
-        '''Equals to the definition of the VPython 3D object class, not to an instance of the class.'''
+        '''Equals to the definition of the VPython 3D object class, not to an instance
+        of the class.'''
         
 
         self.load = None # Load of the set of springs. In `Spring` and `Wire` used only for printing information on the screen. 
@@ -225,17 +248,22 @@ class Spring:
         # Vertical length of the link in equilibrium. Used only to guess the vertical equilibrium positions of the bodies in method `supension.guess_equi_coords`.
         # It must either be given or calculated in a method.In class `Wire`, in method `calculate_stretched_length`, it's set equal to the stretched length assuming
         # the wire is vertical in equilibrium. When it's not vertical an angle is needed, but this hasn't been implemented yet.
-        self.vlength = utils.con(0) # Default value
-        '''Vertical length of the link in equilibrium. Used only to guess the vertical equilibrium positions of the bodies in method ``supension.guess_equi_coords()``.'''
+        self.vlength : symengine.lib.symengine_wrapper.Add = utils.con(0) # Default value
+        '''Vertical length of the link in equilibrium. Used only to guess the vertical
+        equilibrium positions of the bodies in method ``supension.guess_equi_coords()``.'''
 
         
         #----- To be updated by `suspension.connect` method --------# 
         
         self.r_upper : list = []
-        '''List with position vectors of the upper attachment points. Also in the upper body's dictionary ``attachment_points_r``, but gathered here for ease of access. Updated in method ``suspension.connect()``.'''
+        '''List with position vectors of the upper attachment points. Also in the upper
+        body's dictionary ``attachment_points_r``, but gathered here for ease of access.
+        Updated in method ``suspension.connect()``.'''
         
         self.r_lower : list = []
-        '''List with position vectors of the lower attachment points. Also in the lower body's dictionary ``attachment_points_r``, but gathered here for ease of access. Updated in method ``suspension.connect()``.'''
+        '''List with position vectors of the lower attachment points. Also in the lower
+        body's dictionary ``attachment_points_r``, but gathered here for ease of access.
+        Updated in method ``suspension.connect()``.'''
         
         self.angles_lower = None
         self.angles_upper = None
@@ -255,34 +283,35 @@ class Spring:
 
     def update( self ):
         '''
-        * Call the method ``calculate_stretched_length()``. 
-        * Call the method ``calculate_geometry()``.
+        Call the methods ``calculate_stretched_length()`` and ``calculate_geometry()``
+        in this order.
         '''
-        # `calculate.stretched_length` in only useful in this class for
-        # guessing equilibrium values. In derived class `Wire` it is overriden.
+        # `calculate.stretched_length` is only useful in this class for
+        # guessing equilibrium values. In derived class ``Wire`` it is overriden.
         self.calculate_stretched_length() 
         self.calculate_geometry()
 
 
     def calculate_stretched_length( self ):
         """
-        L0 and k are scalars, not numpy arrays.
+        Calculate the stretched length of the links under its load.
         """
+        # L0 and k are scalars because springs don't have necks.
+        # In class ``Wire`` they are numpy arrays because suspension rods can have necks.
         T = self.tension     # Tension in the individual wire
         L0 = self.length     # Unstretched original length 
         k = self.k_axial
         self.l_stretch = L0 + T / k 
         self.vlength = self.l_stretch # Estimate of the vertical length in equilibrium.
-        print( 'vlength spring:' , float(self.vlength) ) ####################################################################################################33
+        # print( 'vlength spring:' , float(self.vlength) ) ####################################################################################################33
 
     def calculate_geometry( self ):
         '''
-        Calculate the vector differences between attachment points and their norms, which are required for the axial and torsional potential energies
-        and for the animation of the wires.
-
-        * Can be called after ``suspension.connect()``.
+        Calculate the vector differences between attachment points and their norms.
         
-        * It is called in ``suspension.update()`` via ``link.update()``.
+        This information is required to calculate the axial and torsional potential energies,
+        and for the animation of the wires. It can be called after ``suspension.connect()``
+        and, in the current implemetation, it is called in ``suspension.update()`` via ``link.update()``.
         '''
         for index in range( self.num ):
             
@@ -307,7 +336,14 @@ class Spring:
     #
     def calculate_axial_Ep( self ):
         '''
-        Calculate elastic potential energy.
+        Calculate elastic potential energy along the length of the link.
+
+        It returns the result and also saves it in ``self.Ep_dict['axial']['energy']`` 
+
+        Returns
+        -------
+        symengine.lib.symengine_wrapper.Mul
+            Algebraic expression of the axial potential energy.
         '''
         add = 0
         for index in range( self.num ):
@@ -324,7 +360,16 @@ class Spring:
     #
     def calculate_torsion_Ep( self ):
         '''
-        Calculate the torsional elastic potential energy. It requires knowledge of the equlibrium positions.
+        Calculate the torsional elastic potential energy.
+        
+        It requires knowledge of the equlibrium positions. It returns the result
+        and also saves it in ``self.Ep_dict['torsion']['energy']`` 
+
+        Returns
+        -------
+        symengine.lib.symengine_wrapper.Mul
+            Algebraic expression of the torsional potential energy.
+
         '''
         add = 0
         angles_diff = self.angles_upper - self.angles_lower
@@ -335,14 +380,18 @@ class Spring:
         self.Ep_dict['torsion']['energy'] = total
         return total
 
-    # To generate a dictionary with parameter values for the animation.
-    # To be tailored to the specific vpython shape of the derived class
-    # It must return a dictionary that will be passed as **kwargs in method `anime.show_anime`.
-    # def shape_parameters( self ):
-    #     return {}
-
     def shape_parameters( self ):
         """
+        Generate a dictionary with parameter values for the animation.
+        
+        To be tailored to the specific VPython 3D object class of the derived class.
+        It returns a dictionary to be passed as ``**kwargs`` to method ``anime.show_anime()``.
+        Currently not un used.
+
+        Returns
+        -------
+        dict
+            Dictionary with parameters for the animation
         """
         param = {}
         # dim = self.body.shape_instance.shape.size # This is a vpython vector, whose elements can only be accessed with dot notation.
@@ -368,9 +417,14 @@ class Wire( Spring ):
         self.material : str = data.material
 
         # In the case of receiving a scalar, `np.atleast_1d` makes the array 1D so it's subscriptable.
-        self.ll : np.array = np.atleast_1d( np.array( data.length , dtype=object ) )  # Segment lengths unstretched
-        self.dd : np.array = np.atleast_1d( np.array( data.diameter , dtype=object ) ) # Segment diameters
-        self.ll_stretch : np.array = np.array([]) # Numpy array with the stretched lengths of the link segments (for wires with necks).
+        self.ll : np.array = np.atleast_1d( np.array( data.length , dtype=object ) )
+        '''Segment lengths unstretched'''
+        
+        self.dd : np.array = np.atleast_1d( np.array( data.diameter , dtype=object ) ) 
+        '''Segment diameters'''
+        
+        self.ll_stretch : np.array = np.array([]) 
+        '''Numpy array with the stretched lengths of the link segments (for wires with necks).'''
 
         # Elementwise operations using numpy arrays
         self.AA = se.pi * self.dd**2 * se.Rational( 1 , 4 ) # Segment's cross section areas

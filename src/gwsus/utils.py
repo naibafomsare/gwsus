@@ -24,34 +24,73 @@ def con( *args ):
 
 @dataclass
 class GroundData:
-    pos: dict # Position vectors of attachment points
+    '''Data class that gathers the positions of the attachment points at the ground.'''
+    
+    pos: dict 
+    '''
+    Dictionary with the position vectors of the attachment points.
+    
+    * Key: name of the attachment point set, e.g. ``'for_F1'``, ``'for_MIR'``, ``'for_IM'``, etc.   
+    
+    * Value: list returned by function ``center()``, ``rectangle()`` or ``triangle()``.
+    '''
 
 @dataclass
 class BodyData( GroundData ):
-    """
-
-    Attributes
-    ----------
-    mass : float
-        Mass of body
-    moi : 
-        Moment of inertia as a $3\times3$ matrix containing ``symengine.Rational`` elements.
-    shape :
-    """
+    '''
+    Data class that gathers the body's physical parameter values.
+    '''
+    
     mass : object
+    '''
+    Mass of body in kg. The user can specify it as ``float`` and it will be
+    automatically converted to a Symengine rational.
+    '''
+    
     moi : object
+    '''
+    Moment of inertia returned by function ``moi()`` or ``moi_diagonal()``.
+    **The former has not been implemented yet**.
+    '''
+    
     shape : object
+    '''Equals to the definition of the VPython 3D object class, not to an instance of the class.'''
 
     def __post_init__( self ):
+        '''Convert ``mass`` to ``symengine.lib.symengine_wrapper.Rational``.'''
         self.mass = con( self.mass )
 
 @dataclass
 class GASFilterData( BodyData ):
+    '''
+    Data class that gathers the physical parameters of a GAS filter.
+    
+    Parameters ``pos`` and ``mass`` are described in parent classes 
+    ``GroundData`` and ``BodyData`` respectively.
+    '''
+    
     resonant_frequency: object  # resonant frequency in Hz 
+    '''
+    Resonant frequency in Hz. The user can specify it as ``float`` and it will
+    be automatically converted to a Symengine rational.
+    '''
+    
     saturation : object
+    '''
+    Saturation value of the displacement transfer function. The user can
+    specify it as ``float`` and it will be automatically converted to a Symengine rational.
+    The sign of the value determines whether the notch appears or not.
+    '''
+
     loss_angle: object
+    '''
+    Loss angle of the spring constant. The user can specify it as ``float`` and it will
+    be automatically converted to a Symengine rational.
+    '''
 
     def __post_init__( self ):
+        '''Convert ``mass``, ``resonant_frequency``, ``saturation`` and ``loss_angle``
+        to ``symengine.lib.symengine_wrapper.Rational``.'''
         self.mass = con( self.mass )
         self.resonant_frequency = con( self.resonant_frequency )
         self.saturation = con( self.saturation )
@@ -64,12 +103,31 @@ class GASFilterData( BodyData ):
 
 @dataclass( kw_only = True )
 class SpringData:
+    '''
+    Data class that gathers the physical parameters of a spring.
+    
+    -----------------------------------------
+    
+    \U0001f4e2 **To be corrected**
+    
+    **In the current implementation, the user likely needs to convert ``length``
+    to se.Rational beforehand, but it should be converted in this data class
+    in __post__init__().**
+    
+    -----------------------------------------
+    '''
+    
     number: int
-    length: object
+    '''
+    Number of links in the set.
+    '''
+    
+    length: object # Why isn't this length converted to a se.Rational?
+    
     loss_angle: object = con(0)
 
     # WireData is child of SpringData, so default values (that will be later overriden)
-    # are needed when ``Wire`` calls the Spring constructor.
+    # are needed here for when ``Wire`` calls the ``Spring`` constructor.
     k_axial: object = None 
     k_torsion: object = None
 
@@ -84,13 +142,54 @@ class SpringData:
 
 @dataclass( kw_only = True )
 class WireData( SpringData ):
-    material: str
-    diameter: List[ object ]
-    length: List[ object ] 
+    '''
+    -----------------------------------------
 
-    # Because material is not know beforehand
-    # the default can only be given during initialization. 
+    \U0001f4e2 **To be corrected**
+        
+    **In the current implementation, the user converts ``length`` and ``diameter``
+    to se.Rational beforehand, but it should be converted in this data class
+    in __post__init__().**
+    
+    -----------------------------------------
+    '''
+    
+    material: str
+    '''Wire material'''
+    
+    diameter: List[ object ]
+    '''
+    Wire diameter
+
+    -----------------------------------------
+
+    \U0001f4e2 **To be checked**
+    
+    **Check how the data is treated in the cases in which there are and there aren't necks.**
+
+    -----------------------------------------    
+    '''
+    
+    length: List[ object ] 
+    '''
+    Wire length
+
+    -----------------------------------------
+
+    \U0001f4e2 **To be checked**
+    
+    **Check how the data is treated in the cases in which there are and there aren't necks.**
+
+    -----------------------------------------    
+    '''
+
     def __post_init__( self ): 
+        '''
+        Initialize the loss angle value to that of the material.
+        
+        Because material is not know beforehand, it can only
+        be set during initialization.
+        '''
         self.loss_angle = self.material.loss_angle
 
     
