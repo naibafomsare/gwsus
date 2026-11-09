@@ -46,12 +46,16 @@ class Ground( bt.Node ):
         of mass in the case of children classes.
         
         * Key: name of the attachment point set, e.g., ``'for_IRM'``, ``'for_MIR'``,
-        ``'for_F1'``, etc.
+          ``'for_F1'``, etc.
+        
         * Value: list of column vectors, with the number of vectors depending on the
-        number of attachment points needed, e.g., for the mirror four are needed
-        whereas for a GAS filter only one.
+          number of attachment points needed, e.g., for the mirror four are needed
+          whereas for a GAS filter only one.
+        
         * Provided by the parameter **data**.
+        
         * For internal use but accesible for user inspection.
+        
         '''
 
         
@@ -77,10 +81,10 @@ class Ground( bt.Node ):
         frame defined by the ground.
         
         * Key: name of the attachment point set, e.g., ``'for_IRM'``, ``'for_MIR'``,
-        ``'for_F1'``, etc.
+          ``'for_F1'``, etc.
         * Value: list of column vectors, with the number of vectors depending on the
-        number of attachment points needed, e.g., for the mirror four are needed
-        whereas for a GAS filter only one.
+          number of attachment points needed, e.g., for the mirror four are needed
+          whereas for a GAS filter only one.
         * For internal use but accesible for user inspection.
         '''
         # -- start-logic-tag --

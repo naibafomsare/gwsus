@@ -1,209 +1,77 @@
 import symengine as se
-import mpmath as mpm
+import mpmath as mpm # in pendulum_toolkit()
 from fractions import Fraction as frac
 import numpy as np
-from dataclasses import dataclass, field
-from types import SimpleNamespace
-from typing import List
-from sympy import sympify
+# from types import SimpleNamespace
+# from sympy import sympify # for commented function show_matrices()
 import sympy as sp
 from sympy import mathematica_code as mcode
 
 
 def con( *args ):
     """
-    int, float ---> se rational
-        mass, resonant_frequency (GASFilter) , saturation (GASFilter):
-    list( int, float ) -----> list( se rational )
-        diameter (Wire), length (Wire), resonant_frequency (InvertedPendulum) 
+    Convert input to Symengine rationals.
+
+    Parameters
+    ----------
+    *args
+    
+        It could either be:
+        
+            - A float or an int,
+            - A variable number of floats or ints or
+            - A variable-length tuple or list of floats or ints.
+
+    Returns
+    -------
+    
+        Depending on the input, it could either return:
+        
+        A Symegine rational or
+        A tuple of Symengine rationals
+        
     """
+    if isinstance(args[0], (list, tuple)): args = args[0] 
     data = tuple( map( lambda x: se.Rational( frac(x).numerator, frac(x).denominator) , args ) )
     return data if len(data) > 1 else data[0] if data else None
 
-#--------------- Dataclass -----------------#
-
-@dataclass
-class GroundData:
-    '''Data class that gathers the positions of the attachment points at the ground.'''
+def rectangle( l , t , ver ):
+    '''
+    Explanation.
     
-    pos: dict 
+    Parameters
+    ----------
+    l: float
+        Wire separation in the longitudinal direction.
+    t: float
+        Wire separation in the transverse direction.
+    ver: float
+        Position of the plane w.r.t. the center of mass.
+
+    Returns
+    -------
+    list
+        List of four Symengine column position vectors, listed counterclockwise from the positive longitudinal direction.
     '''
-    Dictionary with the position vectors of the attachment points.
-    
-    * Key: name of the attachment point set, e.g. ``'for_F1'``, ``'for_MIR'``, ``'for_IM'``, etc.   
-    
-    * Value: list returned by function ``center()``, ``rectangle()`` or ``triangle()``.
-    '''
+    # floats are converted to rationals with con() and unpacked with *
+    r = se.Matrix( [ * con( l , t , ver ) ] ) 
 
-@dataclass
-class BodyData( GroundData ):
-    '''
-    Data class that gathers the body's physical parameter values.
-    '''
-    
-    mass : object
-    '''
-    Mass of body in kg. The user can specify it as ``float`` and it will be
-    automatically converted to a Symengine rational.
-    '''
-    
-    moi : object
-    '''
-    Moment of inertia returned by function ``moi()`` or ``moi_diagonal()``.
-    **The former has not been implemented yet**.
-    '''
-    
-    shape : object
-    '''Equals to the definition of the VPython 3D object class, not to an instance of the class.'''
+    # The position vactors are produced.
+    # Regular ints multiplied by Symenagine rationals always produce Symengine objects.
+    return [ se.diag( a * half , b * half , 1 ) * r  for a , b in zip( [1,-1,-1,1] , [1,1,-1,-1] ) ]
 
-    def __post_init__( self ):
-        '''Convert ``mass`` to ``symengine.lib.symengine_wrapper.Rational``.'''
-        self.mass = con( self.mass )
-
-@dataclass
-class GASFilterData( BodyData ):
-    '''
-    Data class that gathers the physical parameters of a GAS filter.
-    
-    Parameters ``pos`` and ``mass`` are described in parent classes 
-    ``GroundData`` and ``BodyData`` respectively.
-    '''
-    
-    resonant_frequency: object  # resonant frequency in Hz 
-    '''
-    Resonant frequency in Hz. The user can specify it as ``float`` and it will
-    be automatically converted to a Symengine rational.
-    '''
-    
-    saturation : object
-    '''
-    Saturation value of the displacement transfer function. The user can
-    specify it as ``float`` and it will be automatically converted to a Symengine rational.
-    The sign of the value determines whether the notch appears or not.
-    '''
-
-    loss_angle: object
-    '''
-    Loss angle of the spring constant. The user can specify it as ``float`` and it will
-    be automatically converted to a Symengine rational.
-    '''
-
-    def __post_init__( self ):
-        '''Convert ``mass``, ``resonant_frequency``, ``saturation`` and ``loss_angle``
-        to ``symengine.lib.symengine_wrapper.Rational``.'''
-        self.mass = con( self.mass )
-        self.resonant_frequency = con( self.resonant_frequency )
-        self.saturation = con( self.saturation )
-        self.loss_angle = con( self.loss_angle )
-
-#     def empty_matrix_3x3():
-#         return se.zeros(3)
-#     moi : se.Matrix = field(default_factory=empty_matrix_3x3)
-
-
-@dataclass( kw_only = True )
-class SpringData:
-    '''
-    Data class that gathers the physical parameters of a spring.
-    
-    -----------------------------------------
-    
-    \U0001f4e2 **To be corrected**
-    
-    **In the current implementation, the user likely needs to convert ``length``
-    to se.Rational beforehand, but it should be converted in this data class
-    in __post__init__().**
-    
-    -----------------------------------------
-    '''
-    
-    number: int
-    '''
-    Number of links in the set.
-    '''
-    
-    length: object # Why isn't this length converted to a se.Rational?
-    
-    loss_angle: object = con(0)
-
-    # WireData is child of SpringData, so default values (that will be later overriden)
-    # are needed here for when ``Wire`` calls the ``Spring`` constructor.
-    k_axial: object = None 
-    k_torsion: object = None
-
-
-# @dataclass( kw_only = True )
-# class SpringZero:
-#     direction: object
-#     resonant_frequency: object
-#     saturation: object
-#     loss_angle: object
-
-
-@dataclass( kw_only = True )
-class WireData( SpringData ):
-    '''
-    -----------------------------------------
-
-    \U0001f4e2 **To be corrected**
-        
-    **In the current implementation, the user converts ``length`` and ``diameter``
-    to se.Rational beforehand, but it should be converted in this data class
-    in __post__init__().**
-    
-    -----------------------------------------
-    '''
-    
-    material: str
-    '''Wire material'''
-    
-    diameter: List[ object ]
-    '''
-    Wire diameter
-
-    -----------------------------------------
-
-    \U0001f4e2 **To be checked**
-    
-    **Check how the data is treated in the cases in which there are and there aren't necks.**
-
-    -----------------------------------------    
-    '''
-    
-    length: List[ object ] 
-    '''
-    Wire length
-
-    -----------------------------------------
-
-    \U0001f4e2 **To be checked**
-    
-    **Check how the data is treated in the cases in which there are and there aren't necks.**
-
-    -----------------------------------------    
-    '''
-
-    def __post_init__( self ): 
-        '''
-        Initialize the loss angle value to that of the material.
-        
-        Because material is not know beforehand, it can only
-        be set during initialization.
-        '''
-        self.loss_angle = self.material.loss_angle
-
-    
-
-
-    # material: SimpleNamespace = field(
-    #     default_factory=lambda: SimpleNamespace( loss_angle=0 )
-    # )
-
-    # def __post_init__( self ): # Change the loss angle default value during initilization
-    #     self.material.loss_angle = self.loss_angle
-
-#---------------------------------------#
-
+def triangle( pcd , ver , direction = '+L' ):
+    pcr = half * con( pcd )
+    ver = con( ver )
+    if direction == '+L':
+        vec = se.Matrix( [ pcr , 0 , ver ] )
+    elif direction == '-L':
+        vec = se.Matrix( [ pcr * se.cos( se.pi * 60 / 180 ) , pcr * se.sin( se.pi * 60 / 180 ) , ver ] )
+    else:
+        print("Unrecognized orientation, the only options are '+L' and '-L'.")
+        return
+    #######3 print('triangle:\n',[ con( gamma / 180 ) * vec for gamma in [ 0 , 120 , 240 ] ] )
+    return [ rot_yaw_S2B( -se.pi * con(gamma / 180) ) * vec for gamma in [ 0 , 120 , 240 ] ]
 
 
 g = con( 9.80665 ) # gravity acceleration in m/s**2
@@ -316,27 +184,6 @@ def center( ver ):
     return [ se.Matrix( [  0 , 0 , con( ver ) ] ) ]
     # return [ se.Matrix( [  *con( 0 ,  0 , ver ) ] ) ]
 
-def rectangle( l , t , ver ):
-    '''
-    * l: Wire separation in the longitudinal direction
-    * t: Wire separation in the transverse direction
-    * ver: position of the plane w.r.t. the centre of mass
-    '''
-    r = se.Matrix( [ * con( l , t , ver ) ] ) # floats are converted to rationals with con() and unpacked with *
-    return [ se.diag( a * half , b * half , 1 ) * r  for a , b in zip( [1,-1,-1,1] , [1,1,-1,-1] ) ]
-
-def triangle( pcd , ver , direction = '+L' ):
-    pcr = half * con( pcd )
-    ver = con( ver )
-    if direction == '+L':
-        vec = se.Matrix( [ pcr , 0 , ver ] )
-    elif direction == '-L':
-        vec = se.Matrix( [ pcr * se.cos( se.pi * 60 / 180 ) , pcr * se.sin( se.pi * 60 / 180 ) , ver ] )
-    else:
-        print("Unrecognized orientation, the only options are '+L' and '-L'.")
-        return
-    #######3 print('triangle:\n',[ con( gamma / 180 ) * vec for gamma in [ 0 , 120 , 240 ] ] )
-    return [ rot_yaw_S2B( -se.pi * con(gamma / 180) ) * vec for gamma in [ 0 , 120 , 240 ] ]
 
 
 

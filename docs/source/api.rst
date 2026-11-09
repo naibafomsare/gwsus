@@ -1,8 +1,17 @@
 API Reference
 =============
 
-Components
-----------
+Component data classes
+----------------------
+.. automodule:: gwsus.dataclasses
+   :members:
+   :undoc-members:
+   :show-inheritance:
+   :special-members: __init__
+
+
+Component classes
+-----------------
 .. automodule:: gwsus.components
    :members:
    :undoc-members:
@@ -10,9 +19,9 @@ Components
    :special-members: __init__
 
 
-Calculations
-------------
-.. automodule:: gwsus.calculations
+Suspension class
+----------------
+.. automodule:: gwsus.suspension
    :members:
    :undoc-members:
    :show-inheritance:

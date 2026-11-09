@@ -151,7 +151,7 @@ class Suspension:
         Calculates the total wire elastic axial potential energy.
         
         Collects and adds algebraic wire axial elastic potential energy terms for all wires,
-        assigning the total sum to `self.link_axial_Ep.
+        assigning the total sum to ``self.link_axial_Ep``.
 
         Returns
         -------
