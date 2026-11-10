@@ -31,6 +31,8 @@ extensions = [
     "sphinx.ext.mathjax",
     "sphinx.ext.viewcode",
     "sphinx_gallery.gen_gallery",
+    "sphinxcontrib.bibtex",
+    "sphinx_pybtex_etal_style",
 ]
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -40,6 +42,9 @@ sphinx_gallery_conf = {
     "gallery_dirs": "auto_examples",
     "within_subsection_order": "FileNameSortKey",
 }
+
+bibtex_bibfiles = ["biblio.bib"]  # Path to your .bib file relative to conf.py
+bibtex_default_style = "unsrt_et_al"
 
 
 autosummary_generate = True

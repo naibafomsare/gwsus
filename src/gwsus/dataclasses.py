@@ -56,9 +56,9 @@ class GASFilterData( BodyData ):
     ``GroundData`` and ``BodyData`` respectively.
     '''
     
-    resonant_frequency: object  # resonant frequency in Hz 
+    resonance_frequency: object  # resonant frequency in Hz 
     '''
-    Resonant frequency in Hz. The user can specify it as ``float`` and it will
+    Resonance frequency in Hz. The user can specify it as ``float`` and it will
     be automatically converted to a Symengine rational.
     '''
     
@@ -76,10 +76,10 @@ class GASFilterData( BodyData ):
     '''
 
     def __post_init__( self ):
-        '''Convert ``mass``, ``resonant_frequency``, ``saturation`` and ``loss_angle``
+        '''Convert ``mass``, ``resonance_frequency``, ``saturation`` and ``loss_angle``
         to ``symengine.lib.symengine_wrapper.Rational``.'''
         self.mass = con( self.mass )
-        self.resonant_frequency = con( self.resonant_frequency )
+        self.resonance_frequency = con( self.resonance_frequency )
         self.saturation = con( self.saturation )
         self.loss_angle = con( self.loss_angle )
 
@@ -92,14 +92,6 @@ class GASFilterData( BodyData ):
 class SpringData:
     '''
     Data class that gathers the physical parameters of a spring.
-    
-    .. warning::
-    
-        **To be corrected**
-    
-        **In the current implementation, the user likely needs to convert ``length``
-        to se.Rational beforehand, but it should be converted in this data class
-        in __post__init__().**  
     '''
     
     number: int
@@ -120,7 +112,7 @@ class SpringData:
 # @dataclass( kw_only = True )
 # class SpringZero:
 #     direction: object
-#     resonant_frequency: object
+#     resonance_frequency: object
 #     saturation: object
 #     loss_angle: object
 
@@ -129,35 +121,16 @@ class SpringData:
 class WireData( SpringData ):
     '''
     This is a description.
-    
-    .. warning::
-
-        **To be corrected**
-        
-        **In the current implementation, the user converts ``length``
-        to se.Rational beforehand, but it should be converted in this data class
-        in __post__init__().**
     '''
     
     material: str
     '''Wire material'''
     
     diameter: List[ object ]
-    '''
-    Wire diameter
-    '''
+    '''Wire diameter'''
     
     length: List[ object ] 
-    '''
-    Wire length
-
-    .. warning::
-    
-        **To be checked**
-    
-        **Check how the data is treated in the cases in which there are and there aren't necks.**
-   
-    '''
+    '''Wire length'''
 
     def __post_init__( self ): 
         '''
@@ -168,6 +141,7 @@ class WireData( SpringData ):
         be set during initialization.
         '''
         self.diameter = con( self.diameter )
+        self.length = con( self.length )
         self.loss_angle = self.material.loss_angle
 
     

@@ -1,6 +1,7 @@
 import symengine as se
 import numpy as np # for element-wise operations on wires with necks
 import bigtree as bt
+from . import dataclasses
 from . import utils
 from . import shapes3d
 
@@ -315,7 +316,7 @@ class Spring:
         
         This information is required to calculate the axial and torsional potential energies,
         and for the animation of the wires. It can be called after ``suspension.connect()``
-        and, in the current implemetation, it is called in ``suspension.update()`` via ``link.update()``.
+        and, in the current implementation, it is called in ``suspension.update()`` via ``link.update()``.
         '''
         for index in range( self.num ):
             
@@ -351,12 +352,15 @@ class Spring:
         '''
         add = 0
         for index in range( self.num ):
-            add = add + ( self.norm_diff[index] - self.length )**2 
+            # np.sum( self.length ) is the sum of the wire segments without load.
+            # np.sum( self.length ) still works even when self.length is a float or a tuple.
+            add = add + ( self.norm_diff[index] - np.sum( self.length ) )**2 
         total = se.Rational( 1 , 2 ) * self.k_axial * add
         self.Ep_dict['axial']['energy'] = total
         return total
 
-    # Method currently used for derived classes `Wire` and `Spring`.
+    # Maybe this note ca be removed. I'm not sure it's useful.
+    # Method currently used for derived classes `Wire` and `Spring`. 
     # For classes that don't require it, override it with:
     #
     # def calculate_torsion_Ep( self ):
@@ -472,7 +476,7 @@ class Wire( Spring ):
         L0 = self.ll         # Unstretched original lengths of segments
         k = self.kk_axial
         self.ll_stretch = T / k # Element-wise operations using numpy arrays
-        ### print( np.sum( self.ll_stretch ).n(10) ) #######################################################################################################################3
+        ### print( np.sum( self.ll_stretch ).n(10) ) ######################################################################################################
         self.l_stretch = np.sum(L0) + np.sum( self.ll_stretch ) # Sum of the stretched segments
         self.vlength = self.l_stretch # Estimate of the vertical length in equilibrium. In case the link is not supposed to be vertical,
                                       # its projection on the vertical should be given here.
@@ -500,8 +504,9 @@ class InternalSprings:
     def __init__( self ):
 
         # Create the spring instances
-        spring_data = utils.SpringData( number = 1 , k_axial = None , length = utils.con(0) , loss_angle = 1e-4 ) ################### Why is the loss angle set to 1e-4 here?
-        self.springs = [ Spring( self.sus , data = spring_data ) for _ in range( self.num ) ]
+        spring_data = dataclasses.SpringData( number = 1 , k_axial = None , length = utils.con(0) , loss_angle = 1e-4 ) ########## Why is the loss angle set to 1e-4 here?
+        # self.springs = [ Spring( self.sus , data = spring_data ) for _ in range( self.num ) ]
+        self.springs = [ Spring( data = spring_data ) for _ in range( self.num ) ]
 
         # Rotation matrix
         rot = utils.rotB2S( self )
@@ -541,15 +546,17 @@ class InternalSprings:
 
 class GASFilter( RigidBody , InternalSprings ):
 
-    def __init__( self , sus , name , data , **kwargs ):
+    # def __init__( self , sus , name , data , **kwargs ):
+    def __init__( self , name , data , **kwargs ):
         
-        RigidBody.__init__( self , sus , name , data , **kwargs )
+        # RigidBody.__init__( self , sus , name , data , **kwargs )
+        RigidBody.__init__( self , name , data , **kwargs )
 
-        self.sus = sus
+        # self.sus = sus
 
         # self.f0 and self.beta must be in a list, even if they have only one element.
         # It's a requirement for class InternalSprings
-        d1 = data.resonant_frequency
+        d1 = data.resonance_frequency
         self.f0 = [d1] if type(d1) not in (list,tuple) else d1 # if d1 not a list or tuple take the value and put it in a list, otherwise keep it as a list or tuple.
         d2 = data.saturation
         self.beta = [d2] if type(d2) not in (list,tuple) else d2

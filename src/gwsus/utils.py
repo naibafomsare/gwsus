@@ -78,8 +78,43 @@ g = con( 9.80665 ) # gravity acceleration in m/s**2
 
 half = con(1/2)
 
-def moi_diagonal( arg1 , arg2 , arg3 ):
-    return se.diag( *con( arg1 , arg2 , arg3 ) )
+def matrix_3x3( prematrix: list[ list[ float ] ] ):
+    '''
+    Create a 3×3 Symengine matrix
+    whose elements are rationals.
+
+    Parameters
+    ----------
+    prematrix : list[ list[ float ] ]
+        Matrix as a list of sublists of floats,
+        with each sublist representing a row.
+
+    Returns
+    -------
+    se.Matrix
+        Symengine matrix of rational numbers.        
+    '''
+    return se.Matrix( [ [ *con( prematrix[0] ) ],
+                        [ *con( prematrix[1] ) ],
+                        [ *con( prematrix[2] ) ] ] )
+    
+
+def matrix_3x3_diagonal( ele1 , ele2 , ele3 ):
+    '''
+    Create a 3×3 Symengine diagonal matrix
+    whose elements are rationals.
+
+    Parameters
+    ----------
+    ele1, ele2, ele3 : float
+        Element in the diagonal of the matrix. 
+
+    Returns
+    -------
+    se.Matrix
+        Symengine diagonal matrix of rational numbers.        
+    '''
+    return se.diag( *con( ele1 , ele2 , ele3 ) )
 
 func_list = [ sp.cancel , sp.factor , sp.simplify ]
 def simplify( term , subs_dict ):

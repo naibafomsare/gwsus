@@ -20,7 +20,7 @@ import math
 
 # Set precision to certain number of decimal places
 # It shoud not be set inside the class because mpmath uses the global context
-mpm.mp.dps = 60 # 150
+mpm.mp.dps = 80 # 150
 
 class Suspension:
     """
@@ -334,7 +334,7 @@ class Suspension:
 
             # For bodies with internal links, i.e, instances of GASFilter and InvertedPendulum.
             # If it's exactly zero an error is produced in finding the equilibrium position, maybe because the grad Ep is not simplified.
-            if type( body ) in ( components.GASFilter , ): self.equi_coords_guess_dict[ body.q ] = utils.con(1e-8) 
+            if type( body ) in ( components.GASFilter , ): self.equi_coords_guess_dict[ body.q ] = utils.con(1e-20) 
   
         print("Done.")
 
@@ -351,6 +351,9 @@ class Suspension:
         # self.indent="\t"
         
         start_time = time.perf_counter()
+
+        self.guess_equi_coords() # Guess equilibrium coordinate values
+        
         
         # Check wheter the total potential energy has been calculated
         if self.Ep == 0 :
@@ -370,26 +373,30 @@ class Suspension:
         args = sorted( Ep.free_symbols , key=lambda sym : sym.name )
 
         # Calculate gradient
+        print( self.indent + 'Calculating the gradient...' , end="\n" )
         grad = [ se.diff( Ep , symbol ) for symbol in args ]
-        
-        # Lambidify with Sympy to use mpmath
-        # In case you need to call this function directly, you need
-        # to unpack the argument: grad_lambda( *argument )
-        grad_lambda = splambdify( args , grad  , modules='mpmath')  
 
-        # Compile the equilibrium guessed values of the coordiunates into a list of mpmath floats to pass it `mpm.findroot`.  
-        self.guess_equi_coords() # Guess equilibrium coordinate values
-        guess_dict = self.equi_coords_guess_dict
-        guess = [] 
-        for symbol in args: # In the same order as in args to pass it to mp.findroot()
-            guess.append( mpm.mpf( str( guess_dict[ symbol ].n( mpm.mp.dps ) ) ) ) # From symengine rational to string to mpm.mpf
-
-        # Minimize the potential energy
-        print(self.indent + 'Minimizing the total potential energy... ' , end="")
-        result = list( mpm.findroot( grad_lambda , guess ) )
-        result = mpm.chop( result , tol=1e-10) # Remove anything whose magnitude is smaller than 1e-10 (Mathematica default).
-        result = [ utils.con( str( item ) ) for item in result ] # Convert to Symengine Rational
-        print("Done.")
+        with mpm.workdps(30):
+            print(f"Inside method context precision: {mpm.mp.dps}")
+            
+            # Lambidify with Sympy to use mpmath
+            # In case you need to call this function directly, you need
+            # to unpack the argument: grad_lambda( *argument )
+            grad_lambda = splambdify( args , grad  , modules='mpmath')  
+    
+            # Compile the equilibrium guessed values of the coordiunates into a list of mpmath floats to pass it `mpm.findroot`.  
+            # self.guess_equi_coords() # Guess equilibrium coordinate values
+            guess_dict = self.equi_coords_guess_dict
+            guess = [] 
+            for symbol in args: # In the same order as in args to pass it to mp.findroot()
+                guess.append( mpm.mpf( str( guess_dict[ symbol ].n( mpm.mp.dps ) ) ) ) # From symengine rational to string to mpm.mpf
+    
+            # Minimize the potential energy
+            print(self.indent + 'Minimizing the total potential energy... ' , end="")
+            result = list( mpm.findroot( grad_lambda , guess ) )
+            result = mpm.chop( result , tol=1e-10) # Remove anything whose magnitude is smaller than 1e-10 (Mathematica default).
+            result = [ utils.con( str( item ) ) for item in result ] # Convert to Symengine Rational
+            print("Done.")
 
         # Commented out after implementing the call to mpm.chop.
         # result = [ utils.con(0) if abs( float(item) ) < chop else item for item in result ] 
@@ -633,7 +640,7 @@ class Suspension:
         
         vectors = vectors.T.tolist() # Transpose so the eigenvector set becomes a list of lists 
 
-        ############  print( values , vectors ) #########################################################################################################################
+        ### print( values , vectors ) #########################################################################################################################
         
         sorted_pairs = sorted( list( zip( values, vectors ) ) ) # # Sort eigenvalues and eigenvectors from lowest to highest frequency
         

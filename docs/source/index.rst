@@ -19,3 +19,4 @@ documentation for details.
    auto_examples/index
    theory
    api
+   bibliography
