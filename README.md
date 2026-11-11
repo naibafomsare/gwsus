@@ -1,9 +1,8 @@
 # Gwsus
-### Numerical simulation of rigid-body models of the mirror suspensions of the [gravitational-wave detector KAGRA](https://gwcenter.icrr.u-tokyo.ac.jp/en/)
 
 <img align="right" src="SR2_gwsus.png" alt="Long Vertical Figure" width="150" hspace="15">
 
-
+### Numerical simulation of rigid-body models of the mirror suspensions of the [gravitational-wave detector KAGRA](https://gwcenter.icrr.u-tokyo.ac.jp/en/)
 
 
 This type of calculation is necessary in the different stages of development of a gravitational-wave detector.
