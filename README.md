@@ -13,9 +13,10 @@ systems have been implemented in hardware, knowledge of their resonance frequenc
 shapes is necessary to identify stray resonant motion during commissioning and astronomical observation.
 
 Gwsus aims to replace SUMCOM, the software package used in KAGRA so far for the tasks described above.
-Despite the fact that SUMCOM provides scientifically sound predictions, througout the years it has become 
-that it requires a modern replacement. using it requires a license as
-it runs on Mathematica, and it has not been upd. 
+Despite the fact that SUMCOM produces scientifically sound predictions, througout the years, it has become 
+clear that KAGRA requires a replacement easy to use and written in a more accesible language. 
+SUMCOM has the disadvantage that it requires a license to run on Mathematica, and that its has
+not been updated since 2015.
 
 
 
