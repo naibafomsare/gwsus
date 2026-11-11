@@ -16,9 +16,9 @@ actively damp their mechanical resonances without injecting too much control noi
 systems have been implemented in hardware, knowledge of their resonance frequencies and mode
 shapes is necessary to identify stray resonant motion during commissioning and astronomical observations.
 
-Gwsus aims to replace SUMCOM, the software package used in KAGRA so far for the tasks described above.
+Gwsus aims to replace SUMCOM, the software package used in KAGRA for the tasks described above.
 Despite the fact that SUMCOM produces scientifically sound predictions, througout the years, it has become 
-clear that KAGRA requires a replacement easy to use and written in a more accesible language. 
+clear that KAGRA requires a easy-to-use replacement written in a more accesible language. 
 SUMCOM has the disadvantages of requiring a license to run on Mathematica, and of not being 
 maintained since 2015.
 
