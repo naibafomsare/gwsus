@@ -1,8 +1,9 @@
 # Gwsus
+#### Numerical simulation of the mirror suspensions of the gravitational-wave detector [KAGRA](https://gwcenter.icrr.u-tokyo.ac.jp/en/)
+
 
 <img align="right" src="SR2_gwsus.png" alt="Long Vertical Figure" width="150" hspace="15">
 
-#### Numerical simulation of the mirror suspensions of the gravitational-wave detector [KAGRA](https://gwcenter.icrr.u-tokyo.ac.jp/en/)
 
 
 Predicting the behaviour of mirror suspensions is a mandatory task for the successful construction and operation
