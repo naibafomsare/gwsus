@@ -1,60 +1,86 @@
 # Gwsus
 
-#### 📌 Project Status
-
-<blockquote>
-  <strong>🚧 Under Construction:</strong> I am actively building this project. Expect bugs, missing features, and frequent updates.
-</blockquote>
-
-
-
-
-
-
 <img align="right" src="SR2_gwsus.png" alt="Long Vertical Figure" width="150" hspace="15">
 
-### Text Column Header
-Here is your main block of text. Because the image is floated to the right using `<img align="right">`, the text will wrap alongside the top portion of the vertical figure. 
 
-Add as many paragraphs as you need here. 
+Numerical simulation of rigid-body models of the mirror suspensions of the [gravitational-wave detector KAGRA](https://gwcenter.icrr.u-tokyo.ac.jp/en/).
+
+This type of calculation is necessary in the different stages of development of a gravitational-wave detector.
+For example, before construction, it is necessary to design the vibration isolation systems and payloads that hold the
+mirrors of the interferometer, and later, during commissioning, to identify stray resonance motion once
+the mechanical systems have been built. In other stages it can be used to design control filters and calculate
+the amount of control noise injected.
+
+This software package is intended as a replacement of SUMCOM, the for KAGRA.
+
 
 <br clear="right"/>
 
+## Features
 
-* Short description:
-    * Numerical simulation of rigid-body models of mirror suspensions of the [gravitational-wave detector KAGRA](https://gwcenter.icrr.u-tokyo.ac.jp/en/).
-    * Numerical simulation is necessary to design vibration isolation systems and payloads,
-      aid in the design of control filters and identify stray resonance motion once the suspension has been implemented. 
-    * Motivation: this software is for KAGRA as a replacement of SUMCOM.
-* Features:
-    * This software works in the frequency domain. It calculates frequencies and shapes of resonant modes, and transfer functions.
-    * It creates interactive 3D animations of the resonance modes for ease of examination.
-    * It can export the specification of a suspension to Pendulum Toolkit format to allow comparison and validation.
-* Installation
-* Tutorial
-* Link to full documentation
-* Requirements
-* Project status
-* License
-* Acknowledgments
+- **[Feature 1]:** [Brief description of a key capability.]
+- **[Feature 2]:** [Brief description of another capability.]
+- **[Feature 3]:** [Describe an important scientific or computational advantage.]
+- This software works in the frequency domain. It calculates frequencies and shapes of resonant modes, and transfer functions.
+- It creates interactive 3D animations of the resonance modes for ease of examination.
+- It can export the specification of a suspension to Pendulum Toolkit format to allow comparison and validation.
 
-![Project Screenshot](./SR2_gwsus.png)
+## Project status
 
-* Current state of development
+In development
 
-### 📌 Project Status
+## Requirements
 
-This project is currently in **alpha / work in progress**. 
+- Python [minimum supported version]
+- [Important dependency 1]
+- [Important dependency 2]
 
-### What works:
-- [x] User authentication mockup
-- [x] Basic UI layout
+See the project configuration for the complete list of dependencies.
 
-### Coming soon:
-- [ ] Database integration
-- [ ] REST API endpoints
-- [ ] Unit testing suite
+## Installation
 
-* Motivation
+Clone the repository:
 
-* Precendent
+```bash
+git clone https://github.com/[USERNAME]/Gwsus.git
+cd Gwsus
+```
+
+Create and activate a virtual environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+On Windows, activate the environment with:
+
+```powershell
+.venv\Scripts\activate
+```
+
+Install the project and its dependencies:
+
+```bash
+python -m pip install -e .
+```
+
+This command assumes that the repository contains a correctly configured `pyproject.toml`.
+    
+## Tutorial
+
+**[Link to the tutorials]**
+
+## Documentation
+
+**[Link to the full documentation]**
+
+
+## License
+
+This is text
+
+## Acknowledgments
+
+This is text.
+
