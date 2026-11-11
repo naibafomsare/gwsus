@@ -80,8 +80,9 @@ def show_anime( sus , mode_num = 1 ):
     # scene = vp.canvas(title=sus.name )
     scene = vp.canvas()
     # scene.waitfor('paint')
-    scene.background = vp.vec( 0 , 0 , 0 ) # Completely black background
+    # scene.background = vp.vec( 0 , 0 , 0 ) # Completely black background
     # scene.background = vp.vec(17/255,17/255,17/255) # Background color in Jupyterlab output cell
+    scene.background = vp.vec(13/255,17/255,23/255) # Background color in Jupyterlab output cell
     scene.autoscale = False
     sc = 0.95 ; scene.width = sc*480 ; scene.height = sc*640
     scene.center = vp.vec( 0 , 0 , ver_center )
