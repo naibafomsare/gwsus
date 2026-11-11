@@ -2,17 +2,20 @@
 
 <img align="right" src="SR2_gwsus.png" alt="Long Vertical Figure" width="150" hspace="15">
 
-### Numerical simulation of the mirror suspensions of the gravitational-wave detector [KAGRA](https://gwcenter.icrr.u-tokyo.ac.jp/en/)
+#### Numerical simulation of the mirror suspensions of the gravitational-wave detector [KAGRA](https://gwcenter.icrr.u-tokyo.ac.jp/en/)
 
 
 Predicting the behaviour of mirror suspensions is a mandatory task for the successful construction and operation
-of a gravitational-wave detector. Before construction, it is necessary to ensure that the mechanical design of the
+of gravitational-wave detectors. Before construction, it is necessary to ensure that the mechanical design of the
 vibration isolation systems and payloads meet the seismic attenuation requirements, and that it is possible to
 actively damp their mechanical resonances without injecting too much control noise. And later, once the mechanical
-systems have been implemented in hardware and are functional, knowledge of their resonance frequencies and mode
+systems have been implemented in hardware, knowledge of their resonance frequencies and mode
 shapes is necessary to identify stray resonant motion during commissioning and astronomical observation.
 
-This software package is meant as a replacement of SUMCOM, the tool used in KAGRA so far.
+Gwsus aims to replace SUMCOM, the software package used in KAGRA so far for the tasks described above.
+Despite the fact that SUMCOM provides scientifically sound predictions, througout the years it has become 
+that it requires a modern replacement. using it requires a license as
+it runs on Mathematica, and it has not been upd. 
 
 
 
