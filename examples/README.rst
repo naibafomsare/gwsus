@@ -1,6 +1,11 @@
 Examples
 ========
 
+.. warning::
+
+    Documentation under construction   
+    This section is incomplete and subject to change.
+
 This gallery contains examples demonstrating how to use the Gwsus
 package.
 

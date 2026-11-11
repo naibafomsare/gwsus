@@ -3,9 +3,9 @@
 Suspensions
 ===========
 
-.. container:: construction-notice
+.. warning::
 
-    **🛠️⛏️ Documentation under construction**   
+    Documentation under construction   
     This section is incomplete and subject to change.
 
 This is the main title and introduction of your tutorial. 

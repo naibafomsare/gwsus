@@ -15,21 +15,14 @@ def con( *args ):
     Parameters
     ----------
     *args
-    
-        It could either be:
-        
-            - A float or an int,
-            - A variable number of floats or ints or
-            - A variable-length tuple or list of floats or ints.
+        It could either be a float, an int, a number of floats or ints,
+        or a tuple or list of floats or ints.
 
     Returns
     -------
-    
-        Depending on the input, it could either return:
-        
-        A Symegine rational or
-        A tuple of Symengine rationals
-        
+    se.Rational or tuple[se.Rational]
+        Depending on the input, it could either return a Symegine
+        rational or a tuple of Symengine rationals.   
     """
     if isinstance(args[0], (list, tuple)): args = args[0] 
     data = tuple( map( lambda x: se.Rational( frac(x).numerator, frac(x).denominator) , args ) )
@@ -37,7 +30,12 @@ def con( *args ):
 
 def rectangle( l , t , ver ):
     '''
-    Explanation.
+    Generate a list of position vectors laid out in the vertices
+    of a rectangle, whose sides are aligned with the longitudinal
+    and transverse directions. In other words, the plane is parallel 
+    to the longitudinal-transverse plane. The rectangle is centered
+    at the center of mass when seen from above, and displaced from
+    it vertically when seen from the side.
     
     Parameters
     ----------
@@ -61,6 +59,29 @@ def rectangle( l , t , ver ):
     return [ se.diag( a * half , b * half , 1 ) * r  for a , b in zip( [1,-1,-1,1] , [1,1,-1,-1] ) ]
 
 def triangle( pcd , ver , direction = '+L' ):
+    '''
+    Generate a list of position vectors laid out in the vertices
+    of an equlateral triangle. The plane of the triangle is parallel 
+    to the longitudinal-transverse plane. It is centered
+    at the center of mass when seen from above, and displaced from
+    it vertically when seen from the side.
+    
+    Parameters
+    ----------
+    pcd: float
+        Pitch circle diameter.
+    ver: float
+        Position of the plane w.r.t. the center of mass.
+    direction: str
+        Direction one of the tips of the triangle
+        points to. It can either point to the positive
+        (``'+L'``) or negative (``'-L'``) longitudinal directions. 
+
+    Returns
+    -------
+    list
+        List of three Symengine column position vectors, listed counterclockwise from the positive longitudinal direction.
+    '''
     pcr = half * con( pcd )
     ver = con( ver )
     if direction == '+L':
@@ -78,14 +99,14 @@ g = con( 9.80665 ) # gravity acceleration in m/s**2
 
 half = con(1/2)
 
-def matrix_3x3( prematrix: list[ list[ float ] ] ):
+def matrix_3x3( list_matrix: list[ list[ float ] ] ):
     '''
     Create a 3×3 Symengine matrix
     whose elements are rationals.
 
     Parameters
     ----------
-    prematrix : list[ list[ float ] ]
+    list_matrix : list[ list[ float ] ]
         Matrix as a list of sublists of floats,
         with each sublist representing a row.
 
@@ -94,9 +115,9 @@ def matrix_3x3( prematrix: list[ list[ float ] ] ):
     se.Matrix
         Symengine matrix of rational numbers.        
     '''
-    return se.Matrix( [ [ *con( prematrix[0] ) ],
-                        [ *con( prematrix[1] ) ],
-                        [ *con( prematrix[2] ) ] ] )
+    return se.Matrix( [ [ *con( list_matrix[0] ) ],
+                        [ *con( list_matrix[1] ) ],
+                        [ *con( list_matrix[2] ) ] ] )
     
 
 def matrix_3x3_diagonal( ele1 , ele2 , ele3 ):

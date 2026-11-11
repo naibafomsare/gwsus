@@ -1,6 +1,11 @@
 API Reference
 =============
 
+.. warning::
+
+    Documentation under construction   
+    This section is incomplete and subject to change.
+
 Component data classes
 ----------------------
 .. automodule:: gwsus.dataclasses

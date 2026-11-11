@@ -1,11 +1,10 @@
 Theoretical Background
 ======================
 
-.. container:: construction-notice
+.. warning::
 
-   **🛠️⛏️ Documentation under construction**
-
-   This section is incomplete and subject to change.
+    Documentation under construction   
+    This section is incomplete and subject to change.
 
 
 This section will explain the physics behind the numerical calculations.The implementation of important formulas in the code will be explicitly shown.

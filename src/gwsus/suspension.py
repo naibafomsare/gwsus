@@ -339,7 +339,7 @@ class Suspension:
         print("Done.")
 
         
-    def calculate_equilibrium_positions( self , chop = 1e-10 ):
+    def calculate_equilibrium_positions( self, decimal_places: int = 25, chop = 1e-10):
         '''
         '''
         current = self.equi_coords_dict
@@ -376,7 +376,7 @@ class Suspension:
         print( self.indent + 'Calculating the gradient...' , end="\n" )
         grad = [ se.diff( Ep , symbol ) for symbol in args ]
 
-        with mpm.workdps(30):
+        with mpm.workdps(decimal_places):
             print(f"Inside method context precision: {mpm.mp.dps}")
             
             # Lambidify with Sympy to use mpmath

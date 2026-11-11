@@ -54,7 +54,9 @@ napoleon_numpy_docstring = True
 autodoc_member_order = 'bysource'
 
 templates_path = ['_templates']
-exclude_patterns = []
+# exclude_patterns = []
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', '.ipynb_checkpoints']
+
 
 autodoc_default_options = {
 #    "members": True,
