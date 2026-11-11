@@ -2,18 +2,18 @@
 
 <img align="right" src="SR2_gwsus.png" alt="Long Vertical Figure" width="150" hspace="15">
 
-### Numerical simulation of rigid-body models of the mirror suspensions of the [gravitational-wave detector KAGRA](https://gwcenter.icrr.u-tokyo.ac.jp/en/)
+### Numerical simulation of the mirror suspensions of the gravitational-wave detector [KAGRA](https://gwcenter.icrr.u-tokyo.ac.jp/en/)
 
 
-This type of calculation is necessary in the different stages of development of a gravitational-wave detector.
-For example, before construction, it is necessary to design the vibration isolation systems and payloads that hold the
-mirrors of the interferometer, and later, during commissioning, to identify stray resonance motion once
-the mechanical systems have been built. In other stages it can be used to design control filters and calculate
-the amount of control noise injected.
+Predicting the behaviour of mirror suspensions is a mandatory task for the successful construction and operation
+of a gravitational-wave detector. Before construction, it is necessary to ensure that the mechanical design of the
+vibration isolation systems and payloads meet the seismic attenuation requirements, and that it is possible to
+actively damp their mechanical resonances without injecting too much control noise. And later, once the mechanical
+systems have been implemented in hardware and are functional, knowledge of their resonance frequencies and mode
+shapes is necessary to identify stray resonant motion during commissioning and astronomical observation.
 
-This software package is intended as a replacement of SUMCOM, the for KAGRA.
+This software package is meant as a replacement of SUMCOM, the tool used in KAGRA so far.
 
-Text.
 
 
 <br clear="right"/>
