@@ -1,13 +1,12 @@
 # Gwsus
 
-[![Alt Text](https://img.shields.io/badge/website-gwsus-blue.svg)](https://destination-url)
 [![Documentation](https://img.shields.io/badge/docs-blue?style=flat&logo=gitbook)](https://naibafomsare.github.io/gwsus/)
 [![Documentation](https://img.shields.io/badge/github-repo-blue?logo=github)](https://naibafomsare.github.io/gwsus/)
 
 
-<img align="right" src="SR2_gwsus_2.png" alt="Long Vertical Figure" width="150" hspace="15">
+<img align="right" src="SR2_gwsus.png" alt="Long Vertical Figure" width="150" hspace="15">
 
-### Numerical simulation of the mirror suspensions of the gravitational-wave detector [KAGRA](https://gwcenter.icrr.u-tokyo.ac.jp/en/)
+### Numerical rigid-body simulation of the mirror suspensions of the gravitational-wave detector [KAGRA](https://gwcenter.icrr.u-tokyo.ac.jp/en/)
 
 
 Predicting the behaviour of mirror suspensions is a mandatory task for the successful construction and operation
@@ -20,8 +19,8 @@ shapes is necessary to identify stray resonant motion during commissioning and a
 Gwsus aims to replace SUMCOM, the software package used in KAGRA so far for the tasks described above.
 Despite the fact that SUMCOM produces scientifically sound predictions, througout the years, it has become 
 clear that KAGRA requires a replacement easy to use and written in a more accesible language. 
-SUMCOM has the disadvantage that it requires a license to run on Mathematica, and that its has
-not been updated since 2015.
+SUMCOM has the disadvantages of requiring a license to run on Mathematica, and of not being 
+maintained since 2015.
 
 
 
