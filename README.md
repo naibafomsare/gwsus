@@ -1,7 +1,12 @@
 # Gwsus
 
 [![Documentation](https://img.shields.io/badge/docs-blue?style=flat&logo=gitbook)](https://naibafomsare.github.io/gwsus/)
-[![Documentation](https://img.shields.io/badge/github-repo-blue?logo=github)](https://naibafomsare.github.io/gwsus/)
+![Astrophysics](https://img.shields.io/badge/domain-astrophysics-red.svg)
+![Instrumentation](https://img.shields.io/badge/domain-instrumentation-yellowgreen.svg)
+[![Github](https://img.shields.io/badge/github-repo-blue?logo=github)](https://naibafomsare.github.io/gwsus/)
+[![License](https://img.shields.io/badge/license-MIT-green)](https://naibafomsare.github.io/gwsus/)
+
+
 
 
 <img align="right" src="SR2_gwsus.png" alt="Long Vertical Figure" width="150" hspace="15">
@@ -16,36 +21,71 @@ actively damp their mechanical resonances without injecting too much control noi
 systems have been implemented in hardware, knowledge of their resonance frequencies and mode
 shapes is necessary to identify stray resonant motion during commissioning and astronomical observations.
 
-Gwsus aims to replace SUMCOM, the software package used in KAGRA for the tasks described above.
-Despite the fact that SUMCOM produces scientifically sound predictions, througout the years it has become 
-clear that a easy-to-use replacement written in a more accesible language is needed. 
-SUMCOM has the disadvantages of requiring a license to run on Mathematica, and of not being 
-maintained since 2015.
-
+Gwsus aims to replace SUMCOM, the software used in KAGRA for the tasks described above.
+Such a package has the disadvantage of requiring a license to run on Mathematica, has
+bugs and has not been maintained since 2015. Despite the fact that it produces scientifically
+sound predictions, througout the years it has become clear that an easy-to-use alternative
+written in a more accesible language is needed.
 
 
 <br clear="right"/>
 
 ## Features
 
-- **[Feature 1]:** [Brief description of a key capability.]
-- **[Feature 2]:** [Brief description of another capability.]
-- **[Feature 3]:** [Describe an important scientific or computational advantage.]
-- This software works in the frequency domain. It calculates frequencies and shapes of resonant modes, and transfer functions.
-- It creates interactive 3D animations of the resonance modes for ease of examination.
-- It can export the specification of a suspension to Pendulum Toolkit format to allow comparison and validation.
+- Works in the frequency domain.
+- Calculates resonance frequencies, mode shapes, and creates interactive
+  3D animations of the modes for ease of examination.
+- Computes transfer functions.
+- Provides templates for the components of the signal
+  recycling suspensions of KAGRA.
+
+For future releases, the aim is to add the capability to calculate displacement
+thermal noise, and to provide templates for the components of Type-Bp and Type-A suspensions.
 
 ## Project status
 
-In development
+This software is in constant development, and there are a few features
+that still need to be assessed, improved or added before it is ready
+for scientific work in a GW observatory. 
+
+- Implemention of inverted pendulums.
+- Implementation of wire bending potential.
+- Validation of results by comparison with
+  independent calculations.
+- Assessment of numerical round-off error in eigenvector
+  calculation with Mpmath and, depending on results, write a
+  completely symbolic script in Symengine.
+
+## Tutorial
+
+The current tutorial describes how to implement KAGRA's SR2 suspension.
+It covers the specification of its components, their assembly into a suspension,
+calculation of resonance
+frequencies and modes, how to display interactive 3D animations and the calculation of
+transfer functions:
+
+[SR2 Tutorial](https://naibafomsare.github.io/gwsus/auto_examples/)
+
+
+## Documentation
+
+It covers installation instructions, tutorials, theoretical background, application programing interface (API) and bibliography.
+
+[Gwsus documentation](https://naibafomsare.github.io/gwsus/)
+
 
 ## Requirements
 
-- Python [minimum supported version]
-- [Important dependency 1]
-- [Important dependency 2]
-
-See the project configuration for the complete list of dependencies.
+- Python 3.10 or later
+- Numpy
+- Mpmath
+- Sympy
+- Symengine
+- VPython
+- Bigtree
+- Matplotlib
+- Tabulate
+- Termcolor
 
 ## Installation
 
@@ -77,20 +117,11 @@ python -m pip install -e .
 
 This command assumes that the repository contains a correctly configured `pyproject.toml`.
     
-## Tutorial
-
-**[Link to the tutorials]**
-
-## Documentation
-
-**[Link to the full documentation]**
-
-
-## License
-
-This is text
 
 ## Acknowledgments
 
-This is text.
+As SUMCOM before, Gwsus is based on Mark Barton's software *Pendulum Toolkit*,
+which is written in Mathematica and was developed specifically to analyze LIGO's suspensions. Whereas
+Gwsus aims to be accesible, easy to use and maintain, and tailored for KAGRA-style suspensions,
+Pendulum Toolkit remains as an authoritative reference.
 
