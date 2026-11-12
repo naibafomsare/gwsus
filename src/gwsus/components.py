@@ -587,7 +587,7 @@ class GASFilter( RigidBody , InternalSprings ):
             self.name_for_spring = name_center[ 0 ]
         else :
             self.name_for_spring = name_center[ 1 ]
-        print( f"the attachment point at the lower end of the internal spring is called '{ self.name_for_spring }'.")
+        print( f"{self.name}: the attachment point at the lower end of the internal spring is called '{ self.name_for_spring }'.")
         
         # For the attachment points of the spring, used in InternalSprings.__init__( self )
         self.num = 1 # Only one spring

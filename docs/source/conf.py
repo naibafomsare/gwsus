@@ -5,6 +5,7 @@
 
 
 import sys
+import os
 from pathlib import Path
 
 sys.path.insert(
@@ -41,7 +42,10 @@ sphinx_gallery_conf = {
     "examples_dirs": str(ROOT / "examples"),
     "gallery_dirs": "auto_examples",
     "within_subsection_order": "FileNameSortKey",
+    'filename_pattern': r'/example',
 }
+
+os.environ["SPHINX_BUILD"] = "1"
 
 bibtex_bibfiles = ["biblio.bib"]  # Path to your .bib file relative to conf.py
 bibtex_default_style = "unsrt_et_al"

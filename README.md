@@ -1,7 +1,7 @@
 # Gwsus
 
 [![Documentation](https://img.shields.io/badge/docs-blue?style=flat&logo=gitbook)](https://naibafomsare.github.io/gwsus/)
-![Astrophysics](https://img.shields.io/badge/domain-astrophysics-red.svg)
+![Astrophysics](https://img.shields.io/badge/domain-astrophysics-orange.svg)
 ![Instrumentation](https://img.shields.io/badge/domain-instrumentation-yellowgreen.svg)
 [![Github](https://img.shields.io/badge/github-repo-blue?logo=github)](https://naibafomsare.github.io/gwsus/)
 [![License](https://img.shields.io/badge/license-MIT-green)](https://naibafomsare.github.io/gwsus/)
@@ -54,7 +54,7 @@ for scientific work in a GW observatory.
   independent calculations.
 - Assessment of numerical round-off error in eigenvector
   calculation with Mpmath and, depending on results, write a
-  completely symbolic script in Symengine.
+  completely symbolic calculation in Symengine.
 
 ## Tutorial
 

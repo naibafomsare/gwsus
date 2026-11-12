@@ -1,5 +1,5 @@
-Examples
-========
+Tutorials
+=========
 
 .. warning::
 
@@ -15,8 +15,6 @@ numerical calculations, and visualization of results.
 Each example includes Python code and, where applicable, the
 corresponding figures and computational output.
 
-Getting Started
----------------
-
 To run these examples locally, install Gwsus and its dependencies
 in your Python environment before executing the scripts.
+

@@ -1,3 +1,4 @@
+import os
 import symengine as se
 from . import utils
 from collections import defaultdict
@@ -61,6 +62,10 @@ def show_anime( sus , mode_num = 1 ):
     '''
     Shows the animation of the eigenmode
     '''
+    
+    if os.environ.get("SPHINX_BUILD") == "1":
+        return
+        
     # The library vpyton is loaded in this method where the canvas is created,
     # so the bahaviour is compatible with Rise in Jupyter
     import vpython as vp  
