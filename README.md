@@ -122,6 +122,6 @@ This command assumes that the repository contains a correctly configured `pyproj
 
 As SUMCOM before, Gwsus is based on Mark Barton's software *Pendulum Toolkit*,
 which is written in Mathematica and was developed specifically to analyze LIGO's suspensions. Whereas
-Gwsus aims to be accesible, easy to use and maintain, and tailored for KAGRA-style suspensions,
-Pendulum Toolkit remains as an authoritative reference.
+Gwsus aims to be accesible, easy to use and to maintain, and tailored for KAGRA-style suspensions,
+Pendulum Toolkit remains an authoritative reference.
 
