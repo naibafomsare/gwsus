@@ -419,7 +419,7 @@ class Suspension:
 
     #-------------------------------------------------------------------#
         
-    def matrix_2nd_der( self , term , etype : str ):
+    def matrix_2nd_der( self , term , etype : str , verbose = False ):
         '''
         '''
         
@@ -452,9 +452,11 @@ class Suspension:
                 der2_sym = se.diff( der , symj ) # Symbolic 
                 der2 = der2_sym.subs( subs_dict ) # Numeric
                 if sympify( der2 ).has( sp.nan ):
-                    print("\n" + self.indent + f"\tNan detected in element ({coords_list[i]},{coords_list[j]}), I'm trying to solve this... " , end="")
+                    if verbose == True:
+                        print("\n" + self.indent + f"\tNan detected in element ({coords_list[i]},{coords_list[j]}), I'm trying to solve this... " , end="")
                     der2 = utils.simplify( der2_sym , subs_dict )
-                    if sympify( der2 ).has( sp.nan ): print('Failed.')
+                    if sympify( der2 ).has( sp.nan ): print('Failed. ', end='')
+                    elif verbose == True: print('Solved. ', end='')
                 matrix[ i ][ j ] = der2 
                 matrix[ j ][ i ] = der2 
         print("Done.")
@@ -462,7 +464,7 @@ class Suspension:
         return se.Matrix( matrix )
 
         
-    def calculate_mass_matrix( self ):
+    def calculate_mass_matrix( self , verbose = False ):
         '''
         '''
         print("Let's calculate the mass matrix...")
@@ -478,7 +480,7 @@ class Suspension:
         else:
             print('The list vel.coords_list has already been created.')
         
-        self.M_matrix = self.matrix_2nd_der( Ek , 'kinetic' )
+        self.M_matrix = self.matrix_2nd_der( Ek , 'kinetic' , verbose = verbose )
 
         end_time = time.perf_counter()
         elapsed_time = end_time - start_time
@@ -486,7 +488,7 @@ class Suspension:
         print(f"Done, call {self.name}.M_matrix to see the result.")
 
         
-    def calculate_stiffness_matrix( self , with_damping = False ):
+    def calculate_stiffness_matrix( self , with_damping = False , verbose = False ):
         '''
         '''
         print("Let's calculate the master stiffness matrix and its submatrices...")
@@ -519,7 +521,7 @@ class Suspension:
                 if current1 == None: # If the corresponding dict entry equals None, calculate the matrix
                     print( self.indent + 'Link axial potential energy: ' , end="" )
                     term1 = link.Ep_dict['axial']['energy']
-                    matrix1 = self.matrix_2nd_der( term1 , 'potential' )
+                    matrix1 = self.matrix_2nd_der( term1 , 'potential' , verbose = verbose )
                     link.Ep_dict['axial']['master'] = matrix1
                 else: # Otherwise use the one already there
                     matrix1 = current1
@@ -530,7 +532,7 @@ class Suspension:
                 if current2 ==  None: # If the corresponding dict entry equals None, calculate the matrix
                     print( self.indent + 'Link torsional potential energy: ' , end="" )
                     term2 = link.Ep_dict['torsion']['energy']
-                    matrix2 = self.matrix_2nd_der( term2 , 'potential' )
+                    matrix2 = self.matrix_2nd_der( term2 , 'potential' , verbose = verbose  )
                     link.Ep_dict['torsion']['master'] = matrix2
                 else: # Otherwise use the one already there
                     matrix2 = current2 

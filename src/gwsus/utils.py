@@ -143,9 +143,9 @@ def simplify( term , subs_dict ):
     for func in func_list:
         simp = func( simp )
         simp_num = simp.subs( subs_dict )
-        if not simp_num.has( sp.nan ): print('solved. ' , end='') ; return simp_num
-    print('failed. ' , end='')
-    return simp_num
+        if not simp_num.has( sp.nan ): # As soon as it is not nan
+            return simp_num            # Returns the value
+    return simp_num # When out of options, return nan. 
 
 '''
 Passive rotation matrices: transform body to space coordinates (B2S).

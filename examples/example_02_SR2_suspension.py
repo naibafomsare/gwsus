@@ -18,10 +18,12 @@ the frequencies and shapes of resonance modes and how to generate interactive
 # %%
 # Import libraries
 # ----------------------------
-# The necessary libraries are Gwsus and the data classes defined
-# in the previous tutorial: 
+# The necessary libraries are Gwsus, the data classes defined
+# in the previous tutorial, and a new one to print information
+# about the suspension on the screen: 
 import gwsus as sus
 import example_01_SR2_data as data
+from gwsus import info
 
 # %%
 # Suspension instance
@@ -99,48 +101,68 @@ SR2.update()
 # Assembly information
 # --------------------
 # The outcome of the update can be displayed in two tables. The loads are shown with:
-sus.show_info( SR2 , 'load')
+info.show_info( SR2 , 'load')
 
 # %%
 # And information about the links can be printed with:
-sus.show_info( SR2 , 'links')
+info.show_info( SR2 , 'links')
 
 
 # %%
 # Equilibrium positions
 # ---------------------
-# The suspension instance is now ready for the calculation of the equilibrium positions:
+# The suspension is now ready for the calculation of the equilibrium positions:
 SR2.calculate_equilibrium_positions()
 
 # %%
 # This method can take the keyword parameter ``decimal_places``, which defaults to the
-# value printed in the line
+# value printed in the output line
 #
 # .. code-block:: python
 #
 #     For this task: decimal_places = ...
 #
-# This parameter
+# This parameter sets the precision with which the multiple-precision library,
+# Mpmath, will calculate the results. However, depending on the complexity of
+# the system, it may be necessary to reduce it. This is alright as long as it is
+# not larger than, say, a fraction of a micrometer or so.
 
 # %%
-# The 
-sus.print_equilibrium_positions( SR2 )
+# The values of the equlibrium positions can be printed with:
+info.print_equilibrium_positions( SR2 )
+
+# %%
+# This method may take a keyword parameter ``n_tables`` for the number of adjacent tables into which
+# the results can be split when printed.
 
 # %%
 # Mass and stiffness matrices
 # ---------------------------
-
+# These matrices represent the linearization of the system around the
+# equilibrum positions. The calculation of the mass matrix prints
+# information that may be useful:
 SR2.calculate_mass_matrix()
+
+# %%
+# Next, for the purposes of the later calculating the eigenvectors,
+# it is suitable to calculate the stiffness matrix without
+# structural damping by setting ``with_damping = False``: 
 SR2.calculate_stiffness_matrix( with_damping = False )
 
+# %%
+# As the output heading indicates, for calculating transfer functions
+# it is necessary to set ``with_damping = True``.
+#
+# Both of the above functions take the boolean keyword argument ``verbose`` to indicate whether
+# information should be printed for troubleshooting. Its default value is ``False``.
 
 # %%
 # Frequencies and shapes of resonance modes
-# ----------------------------------------
+# -----------------------------------------
 #
 
 SR2.calculate_eigenvectors()
-sus.print_eigenfreq( SR2 , 4 )
+info.print_eigenfreq( SR2 , 4 )
 
 
 # %%
@@ -151,7 +173,7 @@ sus.print_eigenfreq( SR2 , 4 )
 sus.prepare_anime( SR2 )
 
 n = 32
-sus.print_eigen( SR2 , n )
+info.print_eigen( SR2 , n )
 
 # %%
 # Sphinx-Gallery will run the following block, capture the console output, 

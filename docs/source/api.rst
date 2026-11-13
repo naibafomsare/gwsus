@@ -31,6 +31,13 @@ Suspension class
    :undoc-members:
    :show-inheritance:
 
+Suspension information
+----------------------
+.. automodule:: gwsus.info
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Animation
 ---------
 .. automodule:: gwsus.anime
