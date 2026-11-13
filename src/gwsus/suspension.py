@@ -377,7 +377,7 @@ class Suspension:
         grad = [ se.diff( Ep , symbol ) for symbol in args ]
 
         with mpm.workdps(decimal_places):
-            print(f"Inside method context precision: {mpm.mp.dps}")
+            print(f"For this task: decimal_places = {mpm.mp.dps}.")
             
             # Lambidify with Sympy to use mpmath
             # In case you need to call this function directly, you need
