@@ -18,12 +18,14 @@ the frequencies and shapes of resonance modes and how to generate interactive
 # %%
 # Import libraries
 # ----------------------------
-# The necessary libraries are Gwsus, the data classes defined
-# in the previous tutorial, and a new one to print information
-# about the suspension on the screen: 
+# The first libraries in the list are Gwsus and the data classes defined
+# in the previous tutorial. The other two are for printing information
+# on the suspension and to generates an interactive 3D animation of the
+# resonance modes: 
 import gwsus as sus
 import example_01_SR2_data as data
 from gwsus import info
+from gwsus import anime
 
 # %%
 # Suspension instance
@@ -153,34 +155,49 @@ SR2.calculate_stiffness_matrix( with_damping = False )
 # As the output heading indicates, for calculating transfer functions
 # it is necessary to set ``with_damping = True``.
 #
-# Both of the above functions take the boolean keyword argument ``verbose`` to indicate whether
-# information should be printed for troubleshooting. Its default value is ``False``.
+# Both of the above functions take the boolean keyword argument ``verbose``,
+# whose default value is ``False``, to indicate whether
+# information should be printed for troubleshooting.
 
 # %%
 # Frequencies and shapes of resonance modes
 # -----------------------------------------
+# Having calculated the mass and stiffness matrices, the eigenfrequencies and
+# eigenvectors follow with:
+SR2.calculate_eigenvectors()
+
+# %%
+# .. warning::
+#
+#     The presence of imaginary eigenfrequencies indicate errors in the code.
 #
 
-SR2.calculate_eigenvectors()
-info.print_eigenfreq( SR2 , 4 )
+# %%
+# Then, the eigenvalues can be printed in table form: 
+info.print_eigenfreq( SR2, n_tables = 4 )
 
+# %%
+# Particular eigenvectors can also be shown:
+n = 16
+info.print_eigen( SR2 , n )
+
+# %%
+# where ``n`` is the mode number from the list printed above.
 
 # %%
 # Animation
 # ---------
-#
+# Rendering the animation requires first the preparation of the eigenvectors
+# into a format convenient for VPython:
+anime.prepare_anime( SR2 )
 
-sus.prepare_anime( SR2 )
-
-n = 32
-info.print_eigen( SR2 , n )
 
 # %%
-# Sphinx-Gallery will run the following block, capture the console output, 
-# and automatically embed the generated plot directly into the HTML page!
+# An interactive 3D animation is then generated with
+anime.show_anime( SR2 , n )
 
-sus.show_anime( SR2 , n )
-
+# %%
+# where ``n`` is again the mode number from the list printed above:
 
 # %%
 # .. image:: ../_static/SR2_still_anime.png
@@ -189,5 +206,5 @@ sus.show_anime( SR2 , n )
 #    :width: 50%
 
 # %%
-# Sphinx-Gallery will run the following block, capture the console output, 
-# and automatically embed the generated plot directly into the HTML page!
+# The figure in this tutorial is still, but a fully interactive
+# 3D animation should open in a browser in your computer.

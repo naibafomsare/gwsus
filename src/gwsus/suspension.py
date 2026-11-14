@@ -20,7 +20,7 @@ import math
 
 # Set precision to certain number of decimal places
 # It shoud not be set inside the class because mpmath uses the global context
-mpm.mp.dps = 80 # 150
+mpm.mp.dps = 80
 
 class Suspension:
     """
@@ -605,7 +605,6 @@ class Suspension:
         """
         With mpmath
         """
-
         start_time = time.perf_counter() 
 
         Asym = self.M_matrix.inv() * self.K_matrix # Matrix with symengine rational elements
@@ -649,13 +648,14 @@ class Suspension:
         # Create a nested dictionary to store eigenvector information
         self.eigen_dict = defaultdict(dict)
         for idx , ( val , vec ) in enumerate( sorted_pairs  ):
-            if val < 0 : print('Imaginary frequency detected.')
+            if val < 0:
+                print(f'Imaginary frequency detected: {idx+1}, { mpm.nstr( mpm.sqrt( val ) / ( 2 * mpm.pi ) , 5 ) }.')
             self.eigen_dict[ idx + 1 ]['frequency'] = mpm.sqrt( mpm.fabs( val ) ) / ( 2 * mpm.pi )  # idx + 1 to begin counting modes from 1
             self.eigen_dict[ idx + 1 ]['vector_dict'] = dict( zip( self.body_coords_list , vec ) )
 
         end_time = time.perf_counter()
         elapsed_time = end_time - start_time
-        print(f"Finished, elapsed time: {elapsed_time:.4f} seconds.\nYou can see the eigenfrequency list by calling {self.name}.print_eigenfreq()")
+        print(f"Finished, elapsed time: {elapsed_time:.4f} seconds.\nYou can see the eigenfrequency list by calling info.print_eigenfreq({self.name})")
 
     
     def prepare_transfer_functions( self ):
