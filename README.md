@@ -15,11 +15,10 @@
 
 
 Predicting the behaviour of mirror suspensions is a mandatory task for the successful construction and operation
-of gravitational-wave detectors. Before construction, it is necessary to ensure that the mechanical design of the
+of gravitational-wave detectors. Before construction, it is necessary to ensure that the 
 vibration isolation systems and payloads meet the seismic attenuation requirements, and that it is possible to
-actively damp their mechanical resonances without injecting too much control noise. And later, once the mechanical
-systems have been implemented in hardware, knowledge of their resonance frequencies and mode
-shapes is necessary to identify stray resonant motion during commissioning and astronomical observations.
+actively damp their resonant motion without injecting too much control noise. And after construction, when the suspensions are already in operation, knowledge of their resonance frequencies and mode
+shapes is necessary to identify the origin of stray motion during commissioning and astronomical observations.
 
 Gwsus aims to replace SUMCOM, the software used in KAGRA for the tasks described above.
 Such a package has the disadvantage of requiring a license to run on Mathematica, has
