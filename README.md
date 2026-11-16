@@ -16,18 +16,14 @@
 
 Predicting the behaviour of mirror suspensions is a mandatory task for the construction and operation
 of gravitational-wave detectors. Before construction, it is necessary to ensure that the 
-vibration isolation systems and payloads meet the requirements. And after construction, knowledge of their behaviour is necessary to identify stray resonant motion during commissioning and astronomical observations.
+vibration isolation systems and payloads meet the requirements. And after construction, it is necessary to identify stray resonant motion during commissioning and astronomical observations. Gwsus aims to provide these capabilities and more.
 
-Gwsus aims to provide these capabilities and more.  replace SUMCOM, the software used in KAGRA for the tasks described above.
-Such a package has the disadvantage of requiring a license to run on Mathematica, has
-bugs and has not been maintained since 2015. Despite the fact that it produces scientifically
-sound predictions, througout the years it has become clear that an easy-to-use alternative
-written in a more accesible language is needed.
-
+One of the motivations for writing it is to replace the software that is currently used in KAGRA for the same tasks. Despite the fact that such a package produces scientifically sound predictions, it has bugs and has not been maintained since 2015. It also has the disadvantage of requiring a license to run on Mathematica.
+Gwsus is written in Python, which is a more accesible language, and is easy to maintain and use.
 
 <br clear="right"/>
 
-## Current features
+## Current and future features
 
 - Works in the frequency domain.
 - Calculates resonance frequencies, mode shapes, and creates interactive
@@ -35,9 +31,9 @@ written in a more accesible language is needed.
 - Computes transfer functions.
 - Provides templates for the components of the signal
   recycling suspensions of KAGRA.
-
-For future releases, the aim is to add the capability to calculate displacement
-thermal noise, and to provide templates for the components of Type-Bp and Type-A suspensions.
+- In future releases:
+    - It will calculate displacement thermal noise and
+    - Provide templates for the components of Type-Bp and Type-A suspensions.
 
 ## [🔗](TODO.md) Project status
 
@@ -52,16 +48,14 @@ for scientific work. The highlights of the pending tasks are:
 ## [🔗](https://naibafomsare.github.io/gwsus/auto_examples/) Tutorial
 
 The current tutorial describes how to implement one of KAGRA's SR suspensions.
-It covers first the specification of its components and their assembly into a suspension.
-Then it illustrates the calculation of resonance frequencies and modes, and how to display
-interactive 3D animations of the modes.
+It covers first the specification of the components and their assembly into a suspension.
+Then it illustrates how to calculate resonance frequencies, mode shapes and how to show
+them in interactive 3D animations.
 
 
-## Documentation
+## [🔗](https://naibafomsare.github.io/gwsus/) Documentation
 
 It covers installation instructions, tutorials, theoretical background, application programing interface (API) and bibliography.
-
-[Gwsus documentation](https://naibafomsare.github.io/gwsus/)
 
 
 ## Requirements
