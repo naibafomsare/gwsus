@@ -14,8 +14,4 @@
       than relying on Mpmath.
 - [ ] Identify the reason for the method `calculate_equilibrium_positions()` to be relatively slow.
 - [ ] To avoid repeating calculations, save the results to a file so they can be loaded and used later.
-- [ ] Write methods `prepare_manga()` and `show_manga()` for showing the still mechanical system right after the equilibrium positions are calculated.      
-
-
-
-- [ ] Choose a license before the repository goes public.
+- [ ] Write methods `prepare_manga()` and `show_manga()` for showing the still mechanical system right after the equilibrium positions are calculated.

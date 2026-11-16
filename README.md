@@ -1,11 +1,10 @@
 # Gwsus
 
 [![Documentation](https://img.shields.io/badge/docs-blue?style=flat&logo=gitbook)](https://naibafomsare.github.io/gwsus/)
+[![Github](https://img.shields.io/badge/github-repo-blue?logo=github)](https://naibafomsare.github.io/gwsus/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 ![Astrophysics](https://img.shields.io/badge/domain-astrophysics-orange.svg)
 ![Instrumentation](https://img.shields.io/badge/domain-instrumentation-yellowgreen.svg)
-[![Github](https://img.shields.io/badge/github-repo-blue?logo=github)](https://naibafomsare.github.io/gwsus/)
-[![License](https://img.shields.io/badge/license-MIT-green)](https://naibafomsare.github.io/gwsus/)
-
 
 
 
