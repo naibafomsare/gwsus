@@ -4,7 +4,7 @@ version = "0.0.1a0"
 requires-python = ">=3.11"
 
 dependencies = [
-    "setuptools<81",
+    # "setuptools<81",
 	"bigtree",
 	"matplotlib",
 	"mpmath",

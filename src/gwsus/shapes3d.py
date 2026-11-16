@@ -1,5 +1,7 @@
-import warnings
 
+# Disable warning about deprecated package used by VPython.
+# Remove once VPython has been updated. 
+import warnings
 warnings.filterwarnings(
     "ignore",
     message=r"pkg_resources is deprecated as an API.*",
