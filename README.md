@@ -78,32 +78,19 @@ It covers installation instructions, tutorials, theoretical background, applicat
 
 Clone the repository:
 
-```bash
-git clone https://github.com/[USERNAME]/Gwsus.git
-cd Gwsus
-```
+This package requires ``setuptools<81`` to ensure compatibility with
+VPython's use of ``pkg_resources``. In case your current environment
+requires a more recent version of such library,
+it is necessary to create a new environment to install it. The next
+VPython version will be compatible with newer versions of ``setuptools``
+and the restriction will be lifted.
 
-Create and activate a virtual environment:
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-```
-
-On Windows, activate the environment with:
-
-```powershell
-.venv\Scripts\activate
-```
-
-Install the project and its dependencies:
+In either the current environment or in a new one, install by typing:
 
 ```bash
-python -m pip install -e .
+python -m pip install https://github.com/naibafomsare/gwsus/archive/refs/heads/main.zip
 ```
-
-This command assumes that the repository contains a correctly configured `pyproject.toml`.
-    
+  
 
 ## Acknowledgments
 
