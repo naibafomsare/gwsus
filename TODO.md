@@ -1,21 +1,21 @@
 # To-do list
 
-## Development
-- [ ] To avoid having to repeat calculations, save the results to a file so they can be loaded and used later.
-- [ ] Write a function to upload the saved data and put it in a useful form for all functions.
-- [ ] Write methods `prepare_manga()` and `show_manga()` for showing the mechanical system right after the equilibrium positions are calculated.      
-- [ ] Write the implementation for the Inverted Pendulum. 
-- [ ] Identify the reason why the method `Suspension.calculate_equilibrium_positions` is slow.
+- [ ] Fix the presence of imaginary eigenfrequencies detected in the second tutorial. Proceed
+      simultaneously with the overhauling of the `GASFilter` object in case the error is found there. 
+- [ ] Overhaul the implementation of the `GASFilter` object:      
+    - Invoke `Spring` rather than `InternalSpring`.   
+    - Eliminate completely the `InternalSpring` object.
+    - Move the mass of the spring and magic wand equations to the `Spring` object.
+- [ ] Implement inverted pendulums.
+- [ ] Implement the wire bending potential.
+- [ ] Validate results by comparison with independent calculations (e.g. Pendulum Toolkit, SUMCOM) and
+      assess the origin of discrepancies in they are found.
+- [ ] Assess whether it is worth it to implement an eigenvector calculation in Symengine rather
+      than relying on Mpmath.
+- [ ] Identify the reason for the method `calculate_equilibrium_positions()` to be relatively slow.
+- [ ] To avoid repeating calculations, save the results to a file so they can be loaded and used later.
+- [ ] Write methods `prepare_manga()` and `show_manga()` for showing the still mechanical system right after the equilibrium positions are calculated.      
 
-## Documentation
-- [ ] Write appropriate stringdocs to functions, methods and classes, begining with the most frequently used ones.
-- [ ] Write a quickstart guide.
-- [X] Add documentation generated with Sphinx
-- [ ] Create documentation in Read the Docs.
 
-## Information output
-- [X] Split long tables into shorter tables placed side by side.
 
-## Others
-- [ ] Upload an example to Web VPython; see [https://vpython.org/](https://vpython.org/).
 - [ ] Choose a license before the repository goes public.

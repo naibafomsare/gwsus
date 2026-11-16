@@ -170,6 +170,7 @@ SR2.calculate_eigenvectors()
 # .. warning::
 #
 #     The presence of imaginary eigenfrequencies indicate errors in the code.
+#     We are currently working hard to fix it.
 #
 
 # %%

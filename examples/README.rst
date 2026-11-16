@@ -6,22 +6,25 @@ Tutorials
     Documentation under construction   
     This section is incomplete and subject to change.
 
-This gallery contains examples demonstrating how to use the Gwsus
-package.
+This gallery contains tutorials demonstrating how to use the Gwsus
+package. The examples illustrate the construction of suspensions,
+the relevant numerical calculations, and the visualization of results.
 
-The examples illustrate the construction of physical systems,
-numerical calculations, and visualization of results.
+Currently, the tutorials only cover a preliminary version of KAGRA's SR2
+suspension. However, when ready, more examples will be added to explain in more detail the
+usage and implementation of the inverped pendulum and GAS filter objects. 
 
-Each example includes Python code and, where applicable, the
-corresponding figures and computational output.
+Gwsus is able to create animations of the resonance modes in a browser using
+`VPython <https://vpython.org>`_, which relies on `WebGL <https://www.khronos.org/webgl/>`_
+to display the graphics. You can check whether your browser is configured to support WebGL
+by visiting the pages `WebGL 2 Test Page <https://get.webgl.org/webgl2/>`_ and
+`WebGL Test Page <https://get.webgl.org/>`_.
 
-To run these examples locally, install Gwsus and its dependencies
-in your Python environment before executing the scripts.
 
 
 Coordinate system
 -----------------
-The following figure shows a diagram of the mirror with the axis convention used in Gwsus:
+This diagram shows the mirror and the axis convention used in Gwsus:
 
 .. image:: ../_static/xyz-dark-mode.png
    :alt: Three-dimensional visualization of the mechanical system
@@ -53,7 +56,7 @@ the :math:`y` axis points to the positive vertical direction indicated by the to
 
 Roll, pitch and yaw designate rotations around the longitudinal, transverse and vertical axes
 respectively. Their positive directions are defined by the right-hand rule: they are the 
-directions the fingers curl to when the thumb points to their respective axis positive directions.
+directions the fingers curl to when the thumb points to their respective axes' positive directions.
 
 Physical Units
 --------------

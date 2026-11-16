@@ -11,16 +11,14 @@
 
 <img align="right" src="SR2_gwsus.png" alt="Long Vertical Figure" width="150" hspace="15">
 
-### Numerical rigid-body simulation of the mirror suspensions of the gravitational-wave detector [KAGRA](https://gwcenter.icrr.u-tokyo.ac.jp/en/)
+### Numerical rigid-body simulation of the mirror suspensions of the gravitational-wave detector KAGRA [🔗](https://gwcenter.icrr.u-tokyo.ac.jp/en/)
 
 
-Predicting the behaviour of mirror suspensions is a mandatory task for the successful construction and operation
+Predicting the behaviour of mirror suspensions is a mandatory task for the construction and operation
 of gravitational-wave detectors. Before construction, it is necessary to ensure that the 
-vibration isolation systems and payloads meet the seismic attenuation requirements, and that it is possible to
-actively damp their resonant motion without injecting too much control noise. And after construction, when the suspensions are already in operation, knowledge of their resonance frequencies and mode
-shapes is necessary to identify the origin of stray motion during commissioning and astronomical observations.
+vibration isolation systems and payloads meet the requirements. And after construction, knowledge of their behaviour is necessary to identify stray resonant motion during commissioning and astronomical observations.
 
-Gwsus aims to replace SUMCOM, the software used in KAGRA for the tasks described above.
+Gwsus aims to provide these capabilities and more.  replace SUMCOM, the software used in KAGRA for the tasks described above.
 Such a package has the disadvantage of requiring a license to run on Mathematica, has
 bugs and has not been maintained since 2015. Despite the fact that it produces scientifically
 sound predictions, througout the years it has become clear that an easy-to-use alternative
@@ -29,7 +27,7 @@ written in a more accesible language is needed.
 
 <br clear="right"/>
 
-## Features
+## Current features
 
 - Works in the frequency domain.
 - Calculates resonance frequencies, mode shapes, and creates interactive
@@ -41,29 +39,22 @@ written in a more accesible language is needed.
 For future releases, the aim is to add the capability to calculate displacement
 thermal noise, and to provide templates for the components of Type-Bp and Type-A suspensions.
 
-## Project status
+## [🔗](TODO.md) Project status
 
-This software is in constant development, and there are a few features
-that still need to be assessed, improved or added before it is ready
-for scientific work in a GW observatory. 
+This software is still in an experimental stage and in constant development.
+There are features that need to be added or improved before it is ready
+for scientific work. The highlights of the pending tasks are:
 
-- Implemention of inverted pendulums.
-- Implementation of wire bending potential.
-- Validation of results by comparison with
-  independent calculations.
-- Assessment of numerical round-off error in eigenvector
-  calculation with Mpmath and, depending on results, write a
-  completely symbolic calculation in Symengine.
+- Implement inverted pendulums.
+- Implement the wire bending potential.
+- Validate results by comparison with independent calculations.
 
-## Tutorial
+## [🔗](https://naibafomsare.github.io/gwsus/auto_examples/) Tutorial
 
-The current tutorial describes how to implement KAGRA's SR2 suspension.
-It covers the specification of its components, their assembly into a suspension,
-calculation of resonance
-frequencies and modes, how to display interactive 3D animations and the calculation of
-transfer functions:
-
-[SR2 Tutorial](https://naibafomsare.github.io/gwsus/auto_examples/)
+The current tutorial describes how to implement one of KAGRA's SR suspensions.
+It covers first the specification of its components and their assembly into a suspension.
+Then it illustrates the calculation of resonance frequencies and modes, and how to display
+interactive 3D animations of the modes.
 
 
 ## Documentation
@@ -121,6 +112,6 @@ This command assumes that the repository contains a correctly configured `pyproj
 
 As SUMCOM before, Gwsus is based on Mark Barton's software *Pendulum Toolkit*,
 which is written in Mathematica and was developed specifically to analyze LIGO's suspensions. Whereas
-Gwsus aims to be accesible, easy to use and to maintain, and tailored for KAGRA-style suspensions,
+Gwsus aims to be accesible, easy to maintain and use, and tailored for KAGRA-style suspensions,
 Pendulum Toolkit remains an authoritative reference.
 

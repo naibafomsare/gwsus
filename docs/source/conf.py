@@ -43,6 +43,7 @@ sphinx_gallery_conf = {
     "gallery_dirs": "auto_examples",
     "within_subsection_order": "FileNameSortKey",
     'filename_pattern': r'/example',
+    "nested_sections": True,
 }
 
 os.environ["SPHINX_BUILD"] = "1"
