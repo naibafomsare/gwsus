@@ -3,10 +3,6 @@ name = "gwsus"
 version = "0.0.1a0"
 requires-python = ">=3.11"
 
-[build-system]
-requires = ["setuptools<82", "wheel"]
-build-backend = "setuptools.build_meta"
-
 dependencies = [
 	"bigtree",
 	"matplotlib",
@@ -24,3 +20,7 @@ dev = [
     "pytest",
     "jupyter",
 ]
+
+[build-system]
+requires = ["setuptools<82", "wheel"]
+build-backend = "setuptools.build_meta"
