@@ -1,10 +1,14 @@
 # Gwsus
 
 [![Documentation](https://img.shields.io/badge/docs-blue?style=flat&logo=gitbook)](https://naibafomsare.github.io/gwsus/)
-[![Github](https://img.shields.io/badge/github-repo-blue?logo=github)](https://naibafomsare.github.io/gwsus/)
+![Astrophysics](https://img.shields.io/badge/release-0.0.1--pre--alpha-red.svg)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 ![Astrophysics](https://img.shields.io/badge/domain-astrophysics-orange.svg)
 ![Instrumentation](https://img.shields.io/badge/domain-instrumentation-yellowgreen.svg)
+
+<!--
+[![Github](https://img.shields.io/badge/github-repo-blue?logo=github)](https://naibafomsare.github.io/gwsus/)
+-->
 
 
 
@@ -34,7 +38,7 @@ Gwsus is written in Python, which is a more accesible language, and is easy to m
     - It will calculate displacement thermal noise and
     - Provide templates for the components of Type-Bp and Type-A suspensions.
 
-## [🔗](TODO.md) Project status
+## Project status
 
 This software is still in an experimental stage and in constant development.
 There are features that need to be added or improved before it is ready

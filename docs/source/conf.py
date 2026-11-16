@@ -34,6 +34,7 @@ extensions = [
     "sphinx_gallery.gen_gallery",
     "sphinxcontrib.bibtex",
     "sphinx_pybtex_etal_style",
+    "sphinx_copybutton",
 ]
 
 ROOT = Path(__file__).resolve().parents[2]
