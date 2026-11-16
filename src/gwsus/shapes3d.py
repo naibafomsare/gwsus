@@ -1,3 +1,11 @@
+import warnings
+
+warnings.filterwarnings(
+    "ignore",
+    message=r"pkg_resources is deprecated as an API.*",
+    category=UserWarning,
+)
+
 import vpython as vp
 import numpy as np
 import matplotlib.pyplot as plt
