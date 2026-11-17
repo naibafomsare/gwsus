@@ -17,9 +17,9 @@ sys.path.insert(
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'Gwsus'
-copyright = '2026, Fabián Peña'
-author = 'Fabián Peña'
-release = '0.1.0'
+copyright = '2026, Fabián E. Peña Arellano'
+author = 'Fabián E. Peña Arellano'
+release = '0.0.1-pre-alpha'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
