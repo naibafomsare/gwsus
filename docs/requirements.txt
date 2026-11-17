@@ -1,0 +1,6 @@
+sphinx==9.0.4
+sphinx-gallery==0.22.1
+sphinx-copybutton==0.5.2
+sphinxcontrib-bibtex==2.7.0
+sphinx-pybtex-etal-style==0.0.4
+furo
