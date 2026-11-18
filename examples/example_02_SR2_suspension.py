@@ -166,12 +166,6 @@ SR2.calculate_stiffness_matrix( with_damping = False )
 # eigenvectors follow with:
 SR2.calculate_eigenvectors()
 
-# %%
-# .. warning::
-#
-#     The presence of imaginary eigenfrequencies indicate errors in the code.
-#     We are currently working hard to fix it.
-#
 
 # %%
 # Then, the eigenvalues can be printed in table form: 

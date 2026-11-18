@@ -127,9 +127,15 @@ del  mass, moi
 mass = 29.544 # kg
 moi = utils.matrix_3x3_diagonal( 0.23855 , 0.290073 , 0.2491 ) # kg⋅m²
 
-pos_IM = { 'for_BF': utils.center( -13.4e-3 ),
+pos_IM = { 'for_BF': utils.center( 1e-4 ),
            'for_MIR': utils.rectangle( 2*5e-3 , 2*130e-3 , -1.8e-3 ),
            'for_RM': utils.rectangle( 2*10e-3 , 2*145e-3 , -1.8e-3 ) } # args in m
+
+# These values cannot be used until
+# the bending potential is implemented
+# pos_IM = { 'for_BF': utils.center( -13.4e-3 ),
+#            'for_MIR': utils.rectangle( 2*5e-3 , 2*130e-3 , -1.8e-3 ),
+#            'for_RM': utils.rectangle( 2*10e-3 , 2*145e-3 , -1.8e-3 ) } # args in m
 
 IM = sus.BodyData( mass = mass,
                    moi = moi,
@@ -217,8 +223,13 @@ moi = utils.matrix_3x3( [ [ 3.8399, 0.61  , 0      ],
                           [ 0.61  , 3.8399, 0      ],
                           [ 0     , 0     , 6.4676 ] ] ) # kg⋅m²
 
-pos_F1 = { 'for_GND':utils.center( -13.5e-3 ),
-           'for_BF' : utils.center( -24.6e-3 ) } # args in m
+pos_F1 = { 'for_GND':utils.center( 1e-4 ),
+           'for_BF' : utils.center( -1e-3 ) } # args in m
+
+# These values cannot be used until
+# the bending potential is implemented
+# pos_F1 = { 'for_GND':utils.center( -13.5e-3 ),
+#            'for_BF' : utils.center( -24.6e-3 ) } # args in m
 
 F1 = sus.GASFilterData( mass = mass,
                         moi = moi,

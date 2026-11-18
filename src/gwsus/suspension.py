@@ -20,7 +20,13 @@ import math
 
 # Set precision to certain number of decimal places
 # It shoud not be set inside the class because mpmath uses the global context
-mpm.mp.dps = 80
+# mpm.mp.dps = 150
+
+import symengine as se
+import mpmath as mp
+
+mp.mp.dps = 150
+
 
 class Suspension:
     """
@@ -339,7 +345,7 @@ class Suspension:
         print("Done.")
 
         
-    def calculate_equilibrium_positions( self, decimal_places: int = 25, chop = 1e-10):
+    def calculate_equilibrium_positions( self, decimal_places: int = 20, chop = 1e-10):
         '''
         '''
         current = self.equi_coords_dict
@@ -601,13 +607,16 @@ class Suspension:
         print(f"Finished, elapsed time: {elapsed_time:.4f} seconds.")
 
         
-    def calculate_eigenvectors( self ):
+    def calculate_eigenvectors( self , alternative_matrix = None ):
         """
         With mpmath
         """
         start_time = time.perf_counter() 
 
-        Asym = self.M_matrix.inv() * self.K_matrix # Matrix with symengine rational elements
+        if alternative_matrix == None:
+            Asym = self.M_matrix.inv() * self.K_matrix # Matrix with symengine rational elements
+        else:
+            Asym = alternative_matrix
 
         # For diagnosis
         # test = self.K_matrix # self.M_matrix.inv() # Asym
@@ -626,7 +635,12 @@ class Suspension:
             
         # Scan through matrix elements, convert them to mpm.mpf and put them into a mp.matrix
         # .real was aded to ele.n() to get rid of imaginary zeros
-        A = mpm.matrix( [[ mpm.mpf( str( ele.n( mpm.mp.dps ).real ) ) for ele in row] for row in Asym.tolist()] ) 
+        A = mpm.matrix([
+            [mpm.mpf( str( ele.n( mpm.mp.dps+10 ).real ) ) for ele in row]
+            for row in Asym.tolist()
+        ]) 
+        # A = mpm.matrix( [[ mpm.mpf( str( ele.n( mpm.mp.dps ) ) ) for ele in row] for row in Asym.tolist()] ) 
+        # A = matrix_to_mpmath( Asym )
 
         # print( mp.nstr(A) )
         
@@ -641,7 +655,8 @@ class Suspension:
         
         vectors = vectors.T.tolist() # Transpose so the eigenvector set becomes a list of lists 
 
-        ### print( values , vectors ) #########################################################################################################################
+        ##### print('eigenvalues: ' , end='') #########################################################3
+        ##### mpm.nprint(sorted(values),4)  ##############################################################
         
         sorted_pairs = sorted( list( zip( values, vectors ) ) ) # # Sort eigenvalues and eigenvectors from lowest to highest frequency
         

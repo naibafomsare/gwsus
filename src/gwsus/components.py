@@ -352,8 +352,8 @@ class Spring:
         '''
         add = 0
         for index in range( self.num ):
-            # np.sum( self.length ) is the sum of the wire segments without load.
-            # np.sum( self.length ) still works even when self.length is a float or a tuple.
+            # In the code below, np.sum( self.length ) is the sum of the wire segments without load.
+            # It still works even when self.length is a float or a tuple.
             add = add + ( self.norm_diff[index] - np.sum( self.length ) )**2 
         total = se.Rational( 1 , 2 ) * self.k_axial * add
         self.Ep_dict['axial']['energy'] = total
@@ -504,7 +504,8 @@ class InternalSprings:
     def __init__( self ):
 
         # Create the spring instances
-        spring_data = dataclasses.SpringData( number = 1 , k_axial = None , length = utils.con(0) , loss_angle = 1e-4 ) ########## Why is the loss angle set to 1e-4 here?
+        ########## Why is the loss angle set to 1e-4 here?
+        spring_data = dataclasses.SpringData( number = 1 , k_axial = None , length = utils.con(0) , loss_angle = 1e-4 ) 
         # self.springs = [ Spring( self.sus , data = spring_data ) for _ in range( self.num ) ]
         self.springs = [ Spring( data = spring_data ) for _ in range( self.num ) ]
 
@@ -536,7 +537,10 @@ class InternalSprings:
 
         for link , f0 , beta , v1 , v2 in zip( self.springs , self.f0 , self.beta , self.v1 , self.v2 ) :
             m1 = utils.con( 0.1 )
-            m2 = (-4*M*beta - beta*m1 + m1)/(4*ratio*(beta*ratio + ratio + 1)) # in terms of ( M , beta , m1 , ratio ) # Check whether m2 > 0!!!!!!!!!!!!!!!!
+            
+            # in terms of ( M , beta , m1 , ratio ) # Check whether m2 > 0!!!!!!!!!!!!!!!!
+            m2 = (-4*M*beta - beta*m1 + m1)/(4*ratio*(beta*ratio + ratio + 1))
+            
             self.Ek = self.Ek + se.Rational(1,2) * m1 * v1.dot( v1 ) + se.Rational(1,2) * m2 * v2.dot( v2 )
             link.k_axial = ( 2 * se.pi * f0 )**2 * ( M + m1/4 + m2*ratio**2 ) # in terms of ( f0 , M , m1 , m2 , ratio )
             print( f"{self.name}: beta, m1, m2 = {beta.evalf()} , {m1.evalf()} , {m2.evalf()}" ) 
