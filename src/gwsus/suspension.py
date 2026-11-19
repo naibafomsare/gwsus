@@ -2,7 +2,6 @@ import symengine as se
 import sympy as sp
 import mpmath as mpm # for multiple precision numerical mathematics
 import numpy as np # for element-wise operations on wires with necks and for an early version of the eigenvalue problem
-from scipy.optimize import root
 import bigtree as bt
 from collections import defaultdict
 import time
