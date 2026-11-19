@@ -2,6 +2,7 @@ import symengine as se
 import sympy as sp
 import mpmath as mpm # for multiple precision numerical mathematics
 import numpy as np # for element-wise operations on wires with necks and for an early version of the eigenvalue problem
+from scipy.optimize import root
 import bigtree as bt
 from collections import defaultdict
 import time
@@ -25,7 +26,7 @@ import math
 import symengine as se
 import mpmath as mp
 
-mp.mp.dps = 150
+mp.mp.dps = 100
 
 
 class Suspension:
@@ -345,21 +346,23 @@ class Suspension:
         print("Done.")
 
         
-    def calculate_equilibrium_positions( self, decimal_places: int = 20, chop = 1e-10):
+    def calculate_equilibrium_positions( self, decimal_places: int = int(mpm.mp.dps/2) ):
         '''
         '''
         current = self.equi_coords_dict
         if current != None:
             print('The equilibrium positions have already been calculated.')
             return current
-            
         print("Let's calculate the equilibrium positions...")
         # self.indent="\t"
         
         start_time = time.perf_counter()
 
-        self.guess_equi_coords() # Guess equilibrium coordinate values
-        
+        tol = mp.mpf(10) ** (-decimal_places + 5)
+        print(f'Tolerance: {tol}')
+
+        # Guess equilibrium coordinate values
+        self.guess_equi_coords()
         
         # Check wheter the total potential energy has been calculated
         if self.Ep == 0 :
@@ -368,44 +371,80 @@ class Suspension:
         else :
             Ep = self.Ep
 
-        coords0 = self.gnd0.copy() # For also setting some yaw variables to zero, additionally to the ground coordinates.
-        # For bodies hanging from a single link strand, set the yaw variables equal to the yaw of their parents so there is no attempt to optimize them
-        # by the mpmath method. Because the torsional potential energy is not included in calculating the equilibrium positions, there's no restriction on those DoF.
-        for body in self.body_list[1:] : # Without the ground, and must be from top to bottom so the substituted yaw coordinate of a body propagates to its children!
-            if body.link.num == 1 : coords0[ body.yaw ] = coords0[ body.parent.yaw ]
-        Ep = Ep.subs( coords0 ) # Substitute variables that don't participate in the optimization by numeric values 
+        # For setting some yaw variables to zero
+        coords0 = self.gnd0.copy()
+        
+        # For bodies hanging from a single link strand,
+        # set the yaw variables equal to the yaw of their
+        # parents so mpmath.findroot() does not attempt to optimize them
+        # Because the torsional potential energy is not included in the calculation
+        # of the equilibrium positions, there's no restriction on those DoF.
+        # The `for` loop is without the ground, and must go from top to bottom
+        # so the substituted yaw coordinate of a body propagates to its children.
+        for body in self.body_list[1:]:
+            if body.link.num == 1:
+                coords0[ body.yaw ] = coords0[ body.parent.yaw ] 
+
+        # Substitute with numeric values the variables that don't
+        # participate in the optimization. 
+        Ep = Ep.subs( coords0 )
 
         # Symbols in Ep, sorted for reproducibility.
         args = sorted( Ep.free_symbols , key=lambda sym : sym.name )
 
         # Calculate gradient
-        print( self.indent + 'Calculating the gradient...' , end="\n" )
+        print( self.indent + 'Calculating symbolic gradient...', end="\n" )
         grad = [ se.diff( Ep , symbol ) for symbol in args ]
 
+        # print( self.indent + 'Calculating the Jacobian of the gradient...' , end="\n" )
+        # grad_matrix = se.Matrix( len(args), 1 , grad )
+        # vars = se.Matrix(len(args), 1, args)
+        # jac_matrix = grad_matrix.jacobian( vars )
+        # jaco = jac_matrix.tolist()
+
         with mpm.workdps(decimal_places):
-            print(f"For this task: decimal_places = {mpm.mp.dps}.")
+            # print(f"For this task: decimal_places = {mpm.mp.dps}.")
             
             # Lambidify with Sympy to use mpmath
             # In case you need to call this function directly, you need
             # to unpack the argument: grad_lambda( *argument )
-            grad_lambda = splambdify( args , grad  , modules='mpmath')  
+            print( 'Converting gradient from Symengine to Mpmath... ', end='' )
+            start_time_2 = time.perf_counter()
+            grad_lambda = splambdify( args, grad, cse=True, modules='mpmath') 
+            end_time_2 = time.perf_counter()
+            elapsed_time_2 = end_time_2 - start_time_2
+            print( self.indent + f"{elapsed_time_2:.4f} seconds.")
+            # jaco_lambda = splambdify( args , jaco  , modules='mpmath', cse=True)  
     
-            # Compile the equilibrium guessed values of the coordiunates into a list of mpmath floats to pass it `mpm.findroot`.  
-            # self.guess_equi_coords() # Guess equilibrium coordinate values
             guess_dict = self.equi_coords_guess_dict
-            guess = [] 
-            for symbol in args: # In the same order as in args to pass it to mp.findroot()
-                guess.append( mpm.mpf( str( guess_dict[ symbol ].n( mpm.mp.dps ) ) ) ) # From symengine rational to string to mpm.mpf
+            guess = []
+            
+            # Compile the equilibrium guessed values into a list of
+            # mpmath floats to pass it `mpm.findroot`. In the same
+            # order as in args to pass it to mp.findroot()
+            for symbol in args:
+                # From symengine rational to string to mpm.mpf
+                # with twice as much precision
+                guess.append( mpm.mpf( str( guess_dict[ symbol ].n( 2*mpm.mp.dps ) ) ) ) 
+
+             
     
             # Minimize the potential energy
-            print(self.indent + 'Minimizing the total potential energy... ' , end="")
-            result = list( mpm.findroot( grad_lambda , guess ) )
-            result = mpm.chop( result , tol=1e-10) # Remove anything whose magnitude is smaller than 1e-10 (Mathematica default).
+            print(self.indent + 'Minimizing the total potential energy... ' , end="", flush=True )
+            start_time_3 = time.perf_counter()
+            result = list( mpm.findroot( grad_lambda , guess , solver='mdnewton', tol=tol, maxsteps=1000 ) )
+            end_time_3 = time.perf_counter()
+            elapsed_time_3 = end_time_3 - start_time_3
+            print( self.indent + f"{elapsed_time_3:.4f} seconds.")
+            # result = list( mpm.findroot( grad_lambda , guess , J = jaco_lambda ) )
+            
+            # Remove anything whose magnitude is smaller than the tolerance.
+            result = mpm.chop( result , tol=tol) 
+
+            
             result = [ utils.con( str( item ) ) for item in result ] # Convert to Symengine Rational
             print("Done.")
 
-        # Commented out after implementing the call to mpm.chop.
-        # result = [ utils.con(0) if abs( float(item) ) < chop else item for item in result ] 
         
         # Populate a dictionary self.equi_coords_dict with the results
         self.equi_coords_dict = dict( zip( args , result ) ) | coords0
@@ -413,7 +452,7 @@ class Suspension:
         print( self.indent + "Equilibrium positions found.")
         
         # The torsional potential energy is calculated and added to the total
-        print("With knowledge of the equilibrium positions, I'm calling for the calculation of the link torsional potential energies... ")
+        print("With knowledge of the equilibrium positions, I'm calling for the calculation of the symbolic link torsional potential energies... ")
         self.calculate_link_torsion_Ep()
 
         end_time = time.perf_counter()
@@ -588,26 +627,36 @@ class Suspension:
             # print( self.Q_matrix.inv() , '\n')
             # print( dummy_matrix )
             
-            self.K_eff_matrix = self.K_matrix - self.C_XQ_matrix * dummy_matrix # Without float coordinates they are equal
-            self.C_XS_eff_matrix = self.C_XS_matrix - self.C_XQ_matrix * self.Q_matrix.inv() * self.C_QS_matrix # Without float coordinates they are equal
+            # Without float coordinates they are equal
+            self.K_eff_matrix = self.K_matrix - self.C_XQ_matrix * dummy_matrix
+            
+            # Without float coordinates they are equal
+            self.C_XS_eff_matrix = self.C_XS_matrix - self.C_XQ_matrix * self.Q_matrix.inv() * self.C_QS_matrix
 
             # Float coordinates in terms of the body coordinates, calculated
-            # using the equation of motion for float coordinates. Required for the animation only, at least so far.
+            # using the equation of motion for float coordinates.
+            # Required for the animation only, at least so far.
             q_eq_vector = se.Matrix( [ self.equi_coords_dict[ coord ] for coord in self.float_coords_list ] )
             self.float_coords_vector = q_eq_vector + dummy_matrix * self.body_coords_vector
             
-        else:
+        else:            
             print( self.indent + "There are no float coordinates, matrices Q, C_XQ, C_QS and related don't exist." )
-            self.float_coords_vector = se.Matrix( 1 , 0 , [] ).T # Produces ().T.tolist() = [[]], needed in `anime.prepare_animation`
-            self.K_eff_matrix = self.K_matrix # Without float coordinates they are equal
-            self.C_XS_eff_matrix = self.C_XS_matrix # Without float coordinates they are equal
+            
+            # Produces ().T.tolist() = [[]], needed in `anime.prepare_animation`
+            self.float_coords_vector = se.Matrix( 1 , 0 , [] ).T
+            
+            # Without float coordinates they are equal
+            self.K_eff_matrix = self.K_matrix
+            
+            # Without float coordinates they are equal
+            self.C_XS_eff_matrix = self.C_XS_matrix
 
         end_time = time.perf_counter()
         elapsed_time = end_time - start_time
         print(f"Finished, elapsed time: {elapsed_time:.4f} seconds.")
 
         
-    def calculate_eigenvectors( self , alternative_matrix = None ):
+    def calculate_eigenvectors( self , alternative_matrix = None , decimal_places: int = mpm.mp.dps ):
         """
         With mpmath
         """
@@ -618,47 +667,59 @@ class Suspension:
         else:
             Asym = alternative_matrix
 
+        # tol = mp.mpf(10) ** (-decimal_places + 5)
+        # print(f'Tolerance: {tol}')
+
         # For diagnosis
-        # test = self.K_matrix # self.M_matrix.inv() # Asym
+        # test = Asym
         # for row in test.tolist() :
         #     for ele in row:
-        #         test = ele.n(mpm.mp.dps).real
-        #         if isinstance( test, se.RealMPFR):
-        #             print( 'real' )
-        #         elif isinstance( test, se.ComplexMPC):
-        #             print( 'ele:' , ele )
-        #             print( 'ele numeric:', test )
-        #             print( 'ele numeric type:', type(test) ) 
-        #             my_str = str( ele.n( mpm.mp.dps ) ) ; print( 'ele numeric string: ', my_str )
-        #             my_mpf = mpm.mpf( my_str ) ; print( my_mpf )
-        #     print('\n')
-            
-        # Scan through matrix elements, convert them to mpm.mpf and put them into a mp.matrix
-        # .real was aded to ele.n() to get rid of imaginary zeros
+        #         if ele.is_real != True:
+        #             print( utils.se2mpm(ele, mpm.mp.dps) )
+        
+        # Scan through matrix elements, convert them to Mpmath and put them into a mp.matrix
         A = mpm.matrix([
-            [mpm.mpf( str( ele.n( mpm.mp.dps+10 ).real ) ) for ele in row]
+            [ utils.se2mpm(ele, mpm.mp.dps) for ele in row ]
             for row in Asym.tolist()
         ]) 
-        # A = mpm.matrix( [[ mpm.mpf( str( ele.n( mpm.mp.dps ) ) ) for ele in row] for row in Asym.tolist()] ) 
-        # A = matrix_to_mpmath( Asym )
 
-        # print( mp.nstr(A) )
-        
-        values , vectors = mpm.eig( A )
+        # Check if all elements of the matrix have a zero imaginary part
+        is_A_real = all(mpm.im(x) == 0 for x in A)
+        if is_A_real:
+            print('All the elements of the matrix are real')
+        else:
+            print('The matrix has imaginary complex or imeginary elements.')
+
+        # Calculate the eigenvectors
+        with mpm.workdps(decimal_places):
+            print(f"decimal_places = {mpm.mp.dps}.")
+            values , vectors = mpm.eig( A )
+            
         print( 'Number of modes:' , len( values) )
 
-        # Normalize each eigenvector, which are stored as the columns of `vectors`
+        # Normalize each eigenvector
         for idx in range( vectors.cols ) :
-            vectors[:,idx] = vectors[:,idx] / mpm.norm( vectors[:,idx] , p=mpm.inf) # The L-infinity norm is the maximum of the absolute values
+            # The L-infinity norm is the maximum of the absolute values
+            vectors[:,idx] = vectors[:,idx] / mpm.norm( vectors[:,idx] , p=mpm.inf)
 
-        vectors = mpm.chop( vectors , tol=1e-10)
         
-        vectors = vectors.T.tolist() # Transpose so the eigenvector set becomes a list of lists 
+        # Transpose so the eigenvector set becomes a list of lists 
+        vectors = vectors.T.tolist()
 
-        ##### print('eigenvalues: ' , end='') #########################################################3
-        ##### mpm.nprint(sorted(values),4)  ##############################################################
-        
-        sorted_pairs = sorted( list( zip( values, vectors ) ) ) # # Sort eigenvalues and eigenvectors from lowest to highest frequency
+        # Automatically chops imaginary noise near current precision limits, 
+        # and converts mpc(x, 0) into a pure real mpf(x)
+        values = [mpm.chop(ev) for ev in values]
+        vectors = [mpm.chop(ev) for ev in vectors]
+
+        # Check if all eigenvalues are positive
+        if all(item >= 0 for item in values):
+            print('All eigenvalues are positive.')
+        else:
+            print('There are imaginary eigenfrequencies:')
+            mpm.nprint(sorted( values, key=lambda z: (z.real, z.imag) ), 6)  
+
+        # Sort eigenvalues and eigenvectors from lowest to highest frequency
+        sorted_pairs = sorted( list( zip( values, vectors ) ) )
         
         # Create a nested dictionary to store eigenvector information
         self.eigen_dict = defaultdict(dict)
@@ -677,14 +738,16 @@ class Suspension:
         """
         """
         if sympify( self.K_eff_matrix ).has(se.I) == False  : # Check whether there's any imaginary unit in the stiffness matrix
-            cprint( f"""Warning: it seems that the current value of the stiffness matrix `{self.name}.K_eff_matrix` does not accout for structural damping.
-         Fix this by calling {self.name}.calculate_stiffness_matrix( with_damping = True ).""" , 'red')
+            cprint( f"""Warning: it seems that the current value of the stiffness matrix `{self.name}.K_eff_matrix`
+            does not accout for structural damping.
+            Fix this by calling {self.name}.calculate_stiffness_matrix( with_damping = True ).""" , 'red')
 
         self.E_matrix = self.K_eff_matrix - self.w**2 * self.M_matrix # Equation of motion matrix; self.w is the angular velocity.
         self.TF_matrix = self.E_matrix.inv() * self.C_XS_eff_matrix   # Transfer function matrix
 
         # Dictionary to store transfer functions
-        self.tf_dict = { inc : { outc : None for outc in self.body_coords_list } for inc in self.gnd_coords_list } # For TFs from ground coordinates to body coordinates
+        # For TFs from ground coordinates to body coordinates
+        self.tf_dict = { inc : { outc : None for outc in self.body_coords_list } for inc in self.gnd_coords_list }
         
         # The entries for the TFs from generalized forces to body coordinates still has to be implemented here
 

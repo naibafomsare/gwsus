@@ -147,6 +147,14 @@ def simplify( term , subs_dict ):
             return simp_num            # Returns the value
     return simp_num # When out of options, return nan. 
 
+def se2mpm( number , prec ):
+    '''
+    Convert number from Symengine to Mpmath
+    '''
+    number = number.n(prec)
+    number_mpc = mpm.mpc( str(number.real), str(number.imag) ) 
+    return mpm.chop( number_mpc )
+
 '''
 Passive rotation matrices: transform body to space coordinates (B2S).
 '''

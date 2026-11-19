@@ -620,6 +620,8 @@ class GASFilter( RigidBody , InternalSprings ):
         for link in self.springs: link.tension = self.spring_load * utils.g / self.num # For an IP this tension must be set to zero
 
         InternalSprings.update( self )
+
+        # print( self.link.Ep_dict['torsion'] ) ######################################################
         
 
 class InvertedPendulum( GASFilter ):
