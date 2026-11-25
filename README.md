@@ -76,12 +76,10 @@ It covers installation instructions, tutorials, theoretical background, applicat
 
 ## Installation
 
-Clone the repository:
-
 This package requires ``setuptools<81`` to ensure compatibility with
 VPython's use of ``pkg_resources``. In case your current environment
-requires a more recent version of such library,
-it is necessary to create a new environment to install it. The next
+requires a more recent version of such a library for another application,
+it is necessary to create a new environment to install Gwsus. The next
 VPython version will be compatible with newer versions of ``setuptools``
 and this restriction will be lifted.
 
