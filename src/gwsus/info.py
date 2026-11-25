@@ -3,7 +3,14 @@ from tabulate import tabulate
 from itertools import zip_longest
 from math import ceil
 
-def show_info( sus , info_set = 'load' ):
+VERBOSITY_LEVEL = 1
+
+def vprint(message, level=1, **kwargs):
+    '''Print message only when the verbosity level is high enough.'''
+    if VERBOSITY_LEVEL >= level:
+        print( message , **kwargs)
+
+def show_info(sus, info_set='load'):
     '''
     Introduce the option to use different pre-selected data sets.
     '''

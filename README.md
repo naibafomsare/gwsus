@@ -29,8 +29,8 @@ Gwsus is written in Python, which is a more accesible language, and is easy to m
 ## Current and future features
 
 - Works in the frequency domain.
-- Calculates resonance frequencies, mode shapes, and creates interactive
-  3D animations of the modes for ease of examination.
+- Calculates resonance frequencies, mode shapes, and produces interactive
+  3D animations of the modes.
 - Computes transfer functions.
 - Provides templates for the components of the signal
   recycling suspensions of KAGRA.
@@ -96,6 +96,6 @@ python -m pip install https://github.com/naibafomsare/gwsus/archive/refs/heads/m
 
 As its predecesor SUMCOM, Gwsus is based on Mark Barton's software *Pendulum Toolkit*,
 which is written in Mathematica and was developed specifically to analyze LIGO's suspensions. Whereas
-Gwsus aims to be accesible, easy to maintain and use, and tailored for KAGRA-style suspensions,
+Gwsus aims to be accesible, easy to use, maintain and tailored for KAGRA-style suspensions,
 Pendulum Toolkit remains an authoritative reference.
 

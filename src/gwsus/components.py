@@ -4,6 +4,7 @@ import bigtree as bt
 from . import dataclasses
 from . import utils
 from . import shapes3d
+from . info import vprint
 
 
 class Ground( bt.Node ):
@@ -308,7 +309,7 @@ class Spring:
         k = self.k_axial
         self.l_stretch = L0 + T / k 
         self.vlength = self.l_stretch # Estimate of the vertical length in equilibrium.
-        # print( 'vlength spring:' , float(self.vlength) ) ####################################################################################################33
+        # print( 'vlength spring:' , float(self.vlength) ) #######################################
 
     def calculate_geometry( self ):
         '''
@@ -382,10 +383,13 @@ class Spring:
         add = 0
         angles_diff = self.angles_upper - self.angles_lower
         for index in range( self.num ) :
-            n = ( self.r_diff[ index ] / self.norm_diff[ index ] ).subs( self.sus.equi_coords_dict ) # Unit vector along the wire, pointing upwards and in equilibrium. 
+            # Unit vector along the wire, pointing upwards and in equilibrium.
+            n = ( self.r_diff[ index ] / self.norm_diff[ index ] ).subs( self.sus.equi_coords_dict )
+            
             add = add + angles_diff.dot( n ) ** 2
         total = se.Rational( 1 , 2 ) * self.k_torsion * add
         self.Ep_dict['torsion']['energy'] = total
+        vprint(f"""Ep_dict['torsion']['energy']: {self.Ep_dict['torsion']['energy'].free_symbols}. """, level=2, end='')
         return total
 
     def shape_parameters( self ):
@@ -476,7 +480,7 @@ class Wire( Spring ):
         L0 = self.ll         # Unstretched original lengths of segments
         k = self.kk_axial
         self.ll_stretch = T / k # Element-wise operations using numpy arrays
-        ### print( np.sum( self.ll_stretch ).n(10) ) ######################################################################################################
+        #### print( np.sum( self.ll_stretch ).n(10) ) ###########################################
         self.l_stretch = np.sum(L0) + np.sum( self.ll_stretch ) # Sum of the stretched segments
         self.vlength = self.l_stretch # Estimate of the vertical length in equilibrium. In case the link is not supposed to be vertical,
                                       # its projection on the vertical should be given here.
@@ -505,7 +509,7 @@ class InternalSprings:
 
         # Create the spring instances
         ########## Why is the loss angle set to 1e-4 here?
-        spring_data = dataclasses.SpringData( number = 1 , k_axial = None , length = utils.con(0) , loss_angle = 1e-4 ) 
+        spring_data = dataclasses.SpringData( number = 1 , k_axial = None , length = utils.con(0) , loss_angle = utils.con(1e-4) ) 
         # self.springs = [ Spring( self.sus , data = spring_data ) for _ in range( self.num ) ]
         self.springs = [ Spring( data = spring_data ) for _ in range( self.num ) ]
 
@@ -514,15 +518,24 @@ class InternalSprings:
         
         # Connect the springs and add them to the list link.internal
         for idx , link in enumerate( self.springs ):
-            spr_r_copy = se.Matrix( self.spr_r[idx].tolist() ) # Position of spring in global coordinates, deepcopy does not work on symengine matrices.
+            
+            # Position of spring in global coordinates,
+            # deepcopy does not work on symengine matrices.
+            spr_r_copy = se.Matrix( self.spr_r[idx].tolist() )
+            
             link.r_upper = [ spr_r_copy ]
-            link.r_lower = [ spr_r_copy + rot * self.dir_p[idx] ] # self.dir_p is in local coordinates.
+            
+            # self.dir_p is in local coordinates.
+            link.r_lower = [ spr_r_copy + rot * self.dir_p[idx] ]
+            
             self.link_internal.append( link ) 
 
-        # Cross product with the body's angular velocity. This matrix is already in RigidBody, adapt so it's not written again here!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        omegax = se.Matrix( [ [  0             , -self.omega[2] ,   self.omega[1] ] ,
-                              [  self.omega[2] ,  0              , -self.omega[0] ] ,
-                              [ -self.omega[1] , self.omega[0] ,   0 ] ] )
+        # Cross product with the body's angular velocity.
+        # This matrix is already in RigidBody, adapt so
+        # it's not written again here!
+        omegax = se.Matrix( [ [  utils.con(0)  , -self.omega[2] ,   self.omega[1] ] ,
+                              [  self.omega[2] ,  utils.con(0)  ,  -self.omega[0] ] ,
+                              [ -self.omega[1] , self.omega[0]  ,   utils.con(0) ] ] )
         
         # Velocity of the point masses that represent the masses of the massive springs
         half = se.Rational(1,2)
@@ -539,13 +552,16 @@ class InternalSprings:
             m1 = utils.con( 0.1 )
             
             # in terms of ( M , beta , m1 , ratio ) # Check whether m2 > 0!!!!!!!!!!!!!!!!
-            m2 = (-4*M*beta - beta*m1 + m1)/(4*ratio*(beta*ratio + ratio + 1))
+            m2 =  (-4*M*beta - beta*m1 + m1)/(4*ratio*(beta*ratio + ratio + 1))
             
             self.Ek = self.Ek + se.Rational(1,2) * m1 * v1.dot( v1 ) + se.Rational(1,2) * m2 * v2.dot( v2 )
-            link.k_axial = ( 2 * se.pi * f0 )**2 * ( M + m1/4 + m2*ratio**2 ) # in terms of ( f0 , M , m1 , m2 , ratio )
-            print( f"{self.name}: beta, m1, m2 = {beta.evalf()} , {m1.evalf()} , {m2.evalf()}" ) 
+            # link.k_axial = ( 2 * se.pi * f0 )**2 * ( M + m1/4 + m2*ratio**2 ) # in terms of ( f0 , M , m1 , m2 , ratio )
+            link.k_axial = ( 2 * se.pi * f0 )**2 * ( M + m1 * se.Rational(1,4) + m2*ratio**2 ) # in terms of ( f0 , M , m1 , m2 , ratio )
+            vprint( f"{self.name}: beta, m1, m2 = {beta.evalf()} , {m1.evalf()} , {m2.evalf()}", level=1) 
             link.update()
-            link.length = - link.l_stretch # This makes the length of the spring zero
+            link.length = link.l_stretch # This makes the length of the spring zero
+
+            # print( link.length.n(10) ) 
         
 
 class GASFilter( RigidBody , InternalSprings ):
@@ -561,7 +577,9 @@ class GASFilter( RigidBody , InternalSprings ):
         # self.f0 and self.beta must be in a list, even if they have only one element.
         # It's a requirement for class InternalSprings
         d1 = data.resonance_frequency
-        self.f0 = [d1] if type(d1) not in (list,tuple) else d1 # if d1 not a list or tuple take the value and put it in a list, otherwise keep it as a list or tuple.
+        
+        # if d1 not a list or tuple take the value and put it in a list, otherwise keep it as a list or tuple.
+        self.f0 = [d1] if type(d1) not in (list,tuple) else d1
         d2 = data.saturation
         self.beta = [d2] if type(d2) not in (list,tuple) else d2
 
@@ -581,17 +599,22 @@ class GASFilter( RigidBody , InternalSprings ):
         #     print( f"{self.name}: spring with mass, " , end="")
         #     self.body_coords.append( self.q ) # Parameter added to the list of body coordinates
 
-        # Two atachment points at the center
-        name_center = [ name for ( name , coords ) in self.attachment_points_p.items() if ( coords[0][0] == coords[0][1] == 0 ) ] # Extract the name of the points for which x=y=0
+        # Two atachment points at the center.
+        # Extract the name of the points for which x=y=0.
+        name_center = [ name for ( name , coords ) in self.attachment_points_p.items() if ( coords[0][0] == coords[0][1] == 0 ) ]
         
         # Identity the lower one from those two
         p0 = self.attachment_points_p[ name_center[ 0 ] ]
         p1 = self.attachment_points_p[ name_center[ 1 ] ]
+        
         if p0[ 0 ][ 2 ] < p1[ 0 ][ 2 ] :
             self.name_for_spring = name_center[ 0 ]
         else :
             self.name_for_spring = name_center[ 1 ]
-        print( f"{self.name}: the attachment point at the lower end of the internal spring is called '{ self.name_for_spring }'.")
+            
+        vprint( f"{self.name}: the attachment point at the "
+               f"lower end of the internal spring is called "
+               f"'{ self.name_for_spring }'.", level=1)
         
         # For the attachment points of the spring, used in InternalSprings.__init__( self )
         self.num = 1 # Only one spring

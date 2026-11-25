@@ -59,12 +59,12 @@ RM  = sus.RigidBody( 'RM', data.RM )
 # --------------
 # A similar procedure is carried out for the wires, with the only
 # difference of not requring names: 
-wire_MIR = sus.Wire( data.wire_MIR )
-wire_RM = sus.Wire( data.wire_RM )
-wire_IM = sus.Wire( data.wire_IM )
-wire_IRM = sus.Wire( data.wire_IRM )
-wire_BF = sus.Wire( data.wire_BF )
-wire_F1 = sus.Wire( data.wire_F1 )
+wire_MIR = sus.Wire(data.wire_MIR)
+wire_RM = sus.Wire(data.wire_RM)
+wire_IM = sus.Wire(data.wire_IM)
+wire_IRM = sus.Wire(data.wire_IRM)
+wire_BF = sus.Wire(data.wire_BF)
+wire_F1 = sus.Wire(data.wire_F1)
 
 # %%
 # Names are not required because the software identifies the wires by the body they hold.
@@ -75,12 +75,12 @@ wire_F1 = sus.Wire( data.wire_F1 )
 # -------------------
 # Then comes the assembly procedure, which establishes connections between the bodies with the wires
 # by invoking the :meth:`connect` method:  
-SR2.connect( GND , 'for_F1' , F1 , 'for_GND' , wire_F1 )
-SR2.connect( F1, 'for_BF' , BF , 'for_F1' , wire_BF )
-SR2.connect( BF, 'for_IM', IM, 'for_BF', wire_IM )
-SR2.connect( BF, 'for_IRM', IRM , 'for_BF' , wire_IRM )
-SR2.connect( IM , 'for_MIR' , MIR , 'for_IM' , wire_MIR )
-SR2.connect( IM , 'for_RM' , RM , 'for_IM' , wire_RM )
+SR2.connect(GND, 'for_F1', F1, 'for_GND', wire_F1)
+SR2.connect(F1, 'for_BF', BF, 'for_F1', wire_BF)
+SR2.connect(BF, 'for_IM', IM, 'for_BF', wire_IM)
+SR2.connect(BF, 'for_IRM', IRM, 'for_BF', wire_IRM)
+SR2.connect(IM, 'for_MIR', MIR, 'for_IM', wire_MIR)
+SR2.connect(IM, 'for_RM', RM, 'for_IM', wire_RM)
 
 # %%
 # The first two arguments are, in this order, the upper body and the name
@@ -103,20 +103,27 @@ SR2.update()
 # Assembly information
 # --------------------
 # The outcome of the update can be displayed in two tables. The loads are shown with:
-info.show_info( SR2 , 'load')
+info.show_info(SR2, 'load')
 
 # %%
 # And information about the links can be printed with:
-info.show_info( SR2 , 'links')
+info.show_info(SR2, 'links')
+
 
 
 # %%
 # Equilibrium positions
 # ---------------------
-# The suspension is now ready for the calculation of the equilibrium positions:
-SR2.calculate_equilibrium_positions()
+# The suspension is now ready for the calculation of the equilibrium positions. In KAGRA-like
+# suspensions, all the wires are vertical in equilibrium. This conditions makes the 
+# estimation of the equilibrium positions possible without having to solve equations.
+# The following method uses rational numbers to calculate symbolically the stretching lengths of 
+# wires and springs, to estimate the equilibrium positions of bodies, and then to check whether
+# they satisfy the vector equation :math:`\nabla E_p=0`:
 
-# %%
+# sphinx_gallery_start_ignore
+# SR2.calculate_equilibrium_positions()
+# # %%
 # This method can take the keyword parameter ``decimal_places``, which defaults to the
 # value printed in the output line
 #
@@ -128,14 +135,25 @@ SR2.calculate_equilibrium_positions()
 # Mpmath, will calculate the results. However, depending on the complexity of
 # the system, it may be necessary to reduce it. This is alright as long as it is
 # not larger than, say, a fraction of a micrometer or so.
+# sphinx_gallery_end_ignore
+
+SR2.estimate_equilibrium_positions()
+# %%
+# In this case, the measure of success is that the :math:`L_{\infty}(\nabla E_p)=0` exactly, condition that
+# implies that there is no need to solve the equation above. There is a method to solve the
+# equation numerically with Mpmath for multiple precision aritmentic. However, it is
+# computationally expensive and should be used only when the method above fails and cannot be
+# easily fixed. Such a method is under review and will be described in a tutotial when ready.
+
+
 
 # %%
 # The values of the equlibrium positions can be printed with:
-info.print_equilibrium_positions( SR2 )
-
+info.print_equilibrium_positions(SR2)
 # %%
 # This method may take a keyword parameter ``n_tables`` for the number of adjacent tables into which
-# the results can be split when printed.
+# the results can be split when printed. In this example, the two columns have exactly the same values
+# because the estimated values produced the best result and were copied into the final values column.
 
 # %%
 # Mass and stiffness matrices
@@ -149,7 +167,7 @@ SR2.calculate_mass_matrix()
 # Next, for the purposes of the later calculating the eigenvectors,
 # it is suitable to calculate the stiffness matrix without
 # structural damping by setting ``with_damping = False``: 
-SR2.calculate_stiffness_matrix( with_damping = False )
+SR2.calculate_stiffness_matrix(with_damping = False)
 
 # %%
 # As the output heading indicates, for calculating transfer functions
@@ -169,12 +187,12 @@ SR2.calculate_eigenvectors()
 
 # %%
 # Then, the eigenvalues can be printed in table form: 
-info.print_eigenfreq( SR2, n_tables = 4 )
+info.print_eigenfreq(SR2, n_tables = 4)
 
 # %%
 # Particular eigenvectors can also be shown:
 n = 16
-info.print_eigen( SR2 , n )
+info.print_eigen(SR2, n)
 
 # %%
 # where ``n`` is the mode number from the list printed above.
@@ -184,12 +202,12 @@ info.print_eigen( SR2 , n )
 # ---------
 # Rendering the animation requires first the preparation of the eigenvectors
 # into a format convenient for VPython:
-anime.prepare_anime( SR2 )
+anime.prepare_anime(SR2)
 
 
 # %%
 # An interactive 3D animation is then generated with
-anime.show_anime( SR2 , n )
+anime.show_anime(SR2, n)
 
 # %%
 # where ``n`` is again the mode number from the list printed above:

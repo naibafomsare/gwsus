@@ -18,6 +18,8 @@ from termcolor import cprint
 
 import math
 
+from . info import vprint
+
 # Set precision to certain number of decimal places
 # It shoud not be set inside the class because mpmath uses the global context
 # mpm.mp.dps = 150
@@ -142,8 +144,15 @@ class Suspension:
         To be excecuted after all the connections have been established with method `connect`.
         """
         root = self.root
-        self.body_list = list( bt.preorder_iter( root ) ) # Generate self.body_list, from top to bottom
-        for body in bt.postorder_iter( root ): body.update() # From bottom to top so the loads of children are calculated before those of the parents.
+        
+        # Generate self.body_list, from top to bottom
+        self.body_list = list( bt.preorder_iter( root ) )
+
+        
+        # From bottom to top so the loads of children
+        # are calculated before those of the parents.
+        for body in bt.postorder_iter( root ):
+            body.update()
 
         # Dictionary with ground coordinates to zero
         gndk = self.root.gnd_coords
@@ -195,6 +204,7 @@ class Suspension:
         print( self.indent + "Calculating the total link torsional elastic potential energy... " , end="")
         add = 0          
         for body in self.body_list[1:] : # Skip the root, which doesn't have a link, also internal links don't have torsional Ep
+            vprint( f'\n{body.name}: ', level=2, end='')
             add = add + body.link.calculate_torsion_Ep()
         self.link_torsion_Ep = add
         print("Done.")
@@ -314,14 +324,21 @@ class Suspension:
         print( self.tab + 'Number of body coordinates:' , self.nbody )
         print( self.tab + 'Number of float coordinates:' , self.nfloat )
         print( self.tab + 'Number of ground coordinates:' , self.ngnd )
-    
+
+
+
+
+
     #-----------------------------------------------------------------#
     
-    def guess_equi_coords( self ):
+    def estimate_equilibrium_positions( self ):
         
-        print( self.indent + "Guessing the values of the equilibrium coordinates... " , end='')
-        # Ground coordinates to zero, the vertical position of the ground is the reference.
-        # The .copy() is to create a different dictionary, otherwise self.gnd0 will be modified too!
+        vprint( self.indent + "Estimating the values of the equilibrium coordinates... ", level=1 )
+        
+        # Ground coordinates to zero, the vertical position
+        # of the ground is the reference.
+        # The .copy() is to create a different dictionary,
+        # otherwise self.gnd0 will be modified too!
         self.equi_coords_guess_dict = self.gnd0.copy() 
 
         for body in self.body_list[1:] : # From top to bottom w/o ground
@@ -336,15 +353,104 @@ class Suspension:
             lower_attachment_point_p = body.link.r_lower[0][2].subs( subs_dict ) - body.ver
             l = upper_attachment_point_p - body.link.vlength - lower_attachment_point_p
             self.equi_coords_guess_dict[ body.ver ] = l 
-            ######## print(  body.name, body.ver, upper_attachment_point_p.n(6), lower_attachment_point_p.n(6), body.link.vlength.n(6), l.n(6) ) ####################################
+            
+            # The extension of the GAS filter springs are zero in equilibrium 
+            if type( body ) in ( components.GASFilter , ):
+                self.equi_coords_guess_dict[ body.q ] = utils.con(0)
+                
 
-            # For bodies with internal links, i.e, instances of GASFilter and InvertedPendulum.
-            # If it's exactly zero an error is produced in finding the equilibrium position, maybe because the grad Ep is not simplified.
-            if type( body ) in ( components.GASFilter , ): self.equi_coords_guess_dict[ body.q ] = utils.con(1e-20) 
-  
-        print("Done.")
-
+        # ------- Check whether the guessed values are good ------- #
         
+        # Calculate the total potential energy.
+        Ep = self.calculate_Ep()
+        vprint("\tI'm reasonably assuming that the link elastic "
+               "torsional potential energies are zero at equilibrium.", level=1)
+
+        # For setting some yaw variables to zero
+        coords0 = self.gnd0.copy()
+        
+        # For bodies hanging from a single link strand,
+        # set the yaw variables equal to the yaw of their
+        # parents so they don't appear in the optimizion problem.
+        # Because the torsional potential energy is not included in the calculation
+        # of the equilibrium positions, there's no restriction on those DoF.
+        # The `for` loop is without the ground, and must go from top to bottom
+        # so the substituted yaw coordinate of a body propagates to its children.
+        for body in self.body_list[1:]:
+            if body.link.num == 1:
+                coords0[ body.yaw ] = coords0[ body.parent.yaw ] 
+
+        # Substitute with numeric values the variables that don't
+        # participate in the optimization. 
+        Ep = Ep.subs( coords0 )
+
+        # Symbols in Ep, sorted for reproducibility.
+        args = sorted(Ep.free_symbols, key=lambda sym: sym.name)
+
+        # Calculate gradient
+        vprint( self.indent + 'Calculating and evaluating the gradient symbolically...', level=1, end="\n" )
+
+        grad_num = []
+        subs_dict = self.equi_coords_guess_dict
+        
+        for symbol in args:
+
+            # Symbol and it's estimated equilibrium value
+            vprint(f'\n{symbol}: {subs_dict[symbol].n(20)}', level=2)
+
+            # Gradiant element
+            term = se.diff( Ep , symbol )
+
+            # Substitute numerical values and convert to Sympyto use with cancel()
+            term_num = sp.sympify( term.subs(subs_dict) )
+            vprint( f'Grad value: {term_num.n(20)}', level=2)
+
+            # If Nan is found, simplify the expression to eliminate
+            # the offending occurences of the symbol
+            if term_num.has(sp.nan):
+                term_num = utils.cancel_nan(symbol, term, subs_dict)
+                vprint( f'Grad value: {term_num.n(20)}', level=2)
+            
+            grad_num.append( term_num )
+
+        try:
+            # L-infinity norm
+            norm_inf = sp.Matrix(grad_num).norm(sp.oo)
+
+            # In case SymPy returns 'nan' rather than raising an error
+            if norm_inf.has(sp.nan):
+                raise ValueError("Gradient contains NaN; L-infinity norm is undefined.")
+        
+            vprint(f'Gradient L-infinity norm: {norm_inf}', level=1)
+
+        except (TypeError, ValueError) as e:
+            # TypeError catches comparison errors (e.g., '<' not supported between 'nan' and numbers)
+            # ValueError catches the explicit check above
+            print(f"Calculation failed: {e}")
+            return
+
+        if norm_inf == utils.con(0):
+            
+            vprint("The L-infinity norm equals zero exactly; "
+                   "therefore, I'm setting the guessed values as the final values.",
+                   level=1)
+            
+            # Populate a dictionary self.equi_coords_dict with the results
+            self.equi_coords_dict = self.equi_coords_guess_dict.copy()
+            vprint( f"Call info.print_equilibrium_positions({self.name}) to see the results.", level=1)
+
+            # The torsional potential energy is calculated and added to the total
+            vprint("With knowledge of the equilibrium positions, "
+                  "I'm calling the calculation of the symbolic "
+                  "link torsional potential energies... ", level=1)
+            self.calculate_link_torsion_Ep()
+
+
+
+
+
+    # -------------------------------------------------------------------
+            
     def calculate_equilibrium_positions( self, decimal_places: int = int(mpm.mp.dps/2) ):
         '''
         '''
@@ -352,13 +458,13 @@ class Suspension:
         if current != None:
             print('The equilibrium positions have already been calculated.')
             return current
-        print("Let's calculate the equilibrium positions...")
+        vprint("Let's calculate the equilibrium positions...", level=1)
         # self.indent="\t"
         
         start_time = time.perf_counter()
 
         tol = mp.mpf(10) ** (-decimal_places + 5)
-        print(f'Tolerance: {tol}')
+        vprint(f'Tolerance: {tol}', level=1)
 
         # Guess equilibrium coordinate values
         self.guess_equi_coords()
@@ -366,7 +472,8 @@ class Suspension:
         # Check wheter the total potential energy has been calculated
         if self.Ep == 0 :
             Ep = self.calculate_Ep()
-            print("\tI'm reasonably assuming that the link elastic torsional potential energies are zero at equilibrium.")
+            vprint("\tI'm reasonably assuming that the link elastic "
+                   "torsional potential energies are zero at equilibrium.", level=1)
         else :
             Ep = self.Ep
 
@@ -392,7 +499,8 @@ class Suspension:
         args = sorted( Ep.free_symbols , key=lambda sym : sym.name )
 
         # Calculate gradient
-        print( self.indent + 'Calculating symbolic gradient...', end="\n" )
+        # print( self.indent + 'Calculating symbolic gradient...', end="\n" )
+        vprint( self.indent + 'Calculating symbolic gradient...', level=1, end="\n" )
         grad = [ se.diff( Ep , symbol ) for symbol in args ]
 
         # print( self.indent + 'Calculating the Jacobian of the gradient...' , end="\n" )
@@ -407,12 +515,12 @@ class Suspension:
             # Lambidify with Sympy to use mpmath
             # In case you need to call this function directly, you need
             # to unpack the argument: grad_lambda( *argument )
-            print( 'Converting gradient from Symengine to Mpmath... ', end='' )
+            vprint('Converting gradient from Symengine to Mpmath... ', level=1, end='' )
             start_time_2 = time.perf_counter()
             grad_lambda = splambdify( args, grad, cse=True, modules='mpmath') 
             end_time_2 = time.perf_counter()
             elapsed_time_2 = end_time_2 - start_time_2
-            print( self.indent + f"{elapsed_time_2:.4f} seconds.")
+            vprint( self.indent + f"{elapsed_time_2:.4f} seconds.", level=1)
             # jaco_lambda = splambdify( args , jaco  , modules='mpmath', cse=True)  
     
             guess_dict = self.equi_coords_guess_dict
@@ -429,12 +537,12 @@ class Suspension:
              
     
             # Minimize the potential energy
-            print(self.indent + 'Minimizing the total potential energy... ' , end="", flush=True )
+            vprint(self.indent + 'Minimizing the total potential energy... ', level=1, end="", flush=True )
             start_time_3 = time.perf_counter()
             result = list( mpm.findroot( grad_lambda , guess , solver='mdnewton', tol=tol, maxsteps=1000 ) )
             end_time_3 = time.perf_counter()
             elapsed_time_3 = end_time_3 - start_time_3
-            print( self.indent + f"{elapsed_time_3:.4f} seconds.")
+            vprint( self.indent + f"{elapsed_time_3:.4f} seconds.", level=1)
             # result = list( mpm.findroot( grad_lambda , guess , J = jaco_lambda ) )
             
             # Remove anything whose magnitude is smaller than the tolerance.
@@ -451,7 +559,9 @@ class Suspension:
         print( self.indent + "Equilibrium positions found.")
         
         # The torsional potential energy is calculated and added to the total
-        print("With knowledge of the equilibrium positions, I'm calling for the calculation of the symbolic link torsional potential energies... ")
+        vprint("With knowledge of the equilibrium positions, "
+              "I'm calling the calculation of the symbolic "
+              "link torsional potential energies... ", level=1)
         self.calculate_link_torsion_Ep()
 
         end_time = time.perf_counter()
@@ -461,7 +571,11 @@ class Suspension:
         self.indent = ""
         print( f"Call {self.name}.print_equilibrium_positions() to see the results.")
 
-    #-------------------------------------------------------------------#
+
+
+
+    
+    # -------------------------------------------------------------------
         
     def matrix_2nd_der( self , term , etype : str , verbose = False ):
         '''
@@ -507,7 +621,12 @@ class Suspension:
 
         return se.Matrix( matrix )
 
-        
+
+
+
+    
+    # -------------------------------------------------------------------
+            
     def calculate_mass_matrix( self , verbose = False ):
         '''
         '''
@@ -531,7 +650,11 @@ class Suspension:
         print(f"Elapsed time: {elapsed_time:.4f} seconds.")
         print(f"Done, call {self.name}.M_matrix to see the result.")
 
-        
+
+
+
+    # -------------------------------------------------------------------
+            
     def calculate_stiffness_matrix( self , with_damping = False , verbose = False ):
         '''
         '''
@@ -654,6 +777,11 @@ class Suspension:
         elapsed_time = end_time - start_time
         print(f"Finished, elapsed time: {elapsed_time:.4f} seconds.")
 
+
+
+
+    
+    # -----------------------------------------------------------------------------------------------
         
     def calculate_eigenvectors( self , alternative_matrix = None , decimal_places: int = mpm.mp.dps ):
         """
@@ -666,8 +794,8 @@ class Suspension:
         else:
             Asym = alternative_matrix
 
-        # tol = mp.mpf(10) ** (-decimal_places + 5)
-        # print(f'Tolerance: {tol}')
+        tol = mp.mpf(10) ** (-decimal_places + 10)
+        vprint(f'Tolerance: {tol}', level=1)
 
         # For diagnosis
         # test = Asym
@@ -691,7 +819,7 @@ class Suspension:
 
         # Calculate the eigenvectors
         with mpm.workdps(decimal_places):
-            print(f"decimal_places = {mpm.mp.dps}.")
+            # print(f"decimal_places = {mpm.mp.dps}.")
             values , vectors = mpm.eig( A )
             
         print( 'Number of modes:' , len( values) )
@@ -707,14 +835,17 @@ class Suspension:
 
         # Automatically chops imaginary noise near current precision limits, 
         # and converts mpc(x, 0) into a pure real mpf(x)
-        values = [mpm.chop(ev) for ev in values]
-        vectors = [mpm.chop(ev) for ev in vectors]
+        values = [mpm.chop(ev, tol=tol) for ev in values]
+        vectors = [mpm.chop(ev, tol=tol) for ev in vectors]
+
+        # For diagnosis
+        # mpm.nprint(sorted( values, key=lambda z: (z.real, z.imag) ), 6)  
 
         # Check if all eigenvalues are positive
         if all(item >= 0 for item in values):
             print('All eigenvalues are positive.')
         else:
-            print('There are imaginary eigenfrequencies:')
+            print('There are negative eigenvalues:')
             mpm.nprint(sorted( values, key=lambda z: (z.real, z.imag) ), 6)  
 
         # Sort eigenvalues and eigenvectors from lowest to highest frequency
@@ -732,6 +863,7 @@ class Suspension:
         elapsed_time = end_time - start_time
         print(f"Finished, elapsed time: {elapsed_time:.4f} seconds.\nYou can see the eigenfrequency list by calling info.print_eigenfreq({self.name})")
 
+    # ------------------------------------
     
     def prepare_transfer_functions( self ):
         """
@@ -750,6 +882,8 @@ class Suspension:
         
         # The entries for the TFs from generalized forces to body coordinates still has to be implemented here
 
+    # ------------------------------------
+    
     def transfer_function( self , in_coord , out_coord ):
         """
         """

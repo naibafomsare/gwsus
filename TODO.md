@@ -5,11 +5,12 @@
       from class `InternalSpring` to class `Spring`.
     - Eliminate `InternalSpring`.
     - Invoke `Spring` rather than `InternalSpring`.
-- [ ] Assess numerical error and implement remedying strategies.
+- [ ] In `matrix_2nd_der()` try using `utils.cancel_nan()` rather than `utils.simplify()`.
 - [ ] Implement inverted pendulums.
 - [ ] Implement the wire bending potential.
 - [ ] Validate results by comparison with independent calculations (e.g. Pendulum Toolkit, SUMCOM) and
-      assess the origin of discrepancies in they are found.
-- [ ] Try to make the method `calculate_equilibrium_positions()` faster.
+      assess the origin of discrepancies if they are found.
+- [ ] Modify the method `calculate_equilibrium_positions()` to make it compatible
+      with `estimate_equilibrium_positions()`.
 - [ ] To avoid repeating calculations, save the results to a file so they can be loaded and used later.
 - [ ] Write methods `prepare_manga()` and `show_manga()` for showing the still mechanical system right after the equilibrium positions are calculated.

@@ -87,12 +87,11 @@ def triangle( pcd , ver , direction = '+L' ):
     if direction == '+L':
         vec = se.Matrix( [ pcr , 0 , ver ] )
     elif direction == '-L':
-        vec = se.Matrix( [ pcr * se.cos( se.pi * 60 / 180 ) , pcr * se.sin( se.pi * 60 / 180 ) , ver ] )
+        vec = se.Matrix( [ pcr * se.cos( se.pi * se.Rational(60, 180)  ) , pcr * se.sin( se.pi * se.Rational(60, 180) ) , ver ] )
     else:
         print("Unrecognized orientation, the only options are '+L' and '-L'.")
         return
-    #######3 print('triangle:\n',[ con( gamma / 180 ) * vec for gamma in [ 0 , 120 , 240 ] ] )
-    return [ rot_yaw_S2B( -se.pi * con(gamma / 180) ) * vec for gamma in [ 0 , 120 , 240 ] ]
+    return [ rot_yaw_S2B( -se.pi * se.Rational(gamma, 180) ) * vec for gamma in [ 0 , 120 , 240 ] ]
 
 
 g = con( 9.80665 ) # gravity acceleration in m/s**2
@@ -146,6 +145,28 @@ def simplify( term , subs_dict ):
         if not simp_num.has( sp.nan ): # As soon as it is not nan
             return simp_num            # Returns the value
     return simp_num # When out of options, return nan. 
+
+def cancel_nan(symbol, expr, subs_dict):
+    '''
+    This is text
+    '''
+    # Creates a copy of the original dict so it's not modified
+    filter_dict = subs_dict.copy()
+
+    # Removes from the dict the symbol that produces the Nan
+    filter_dict.pop(symbol)
+    term = sp.simplify(expr.subs(filter_dict))
+
+    # Creates a non negative symbol to keep sp.cancel()
+    # from generating an error
+    x = sp.symbols('x', nonnegative=True)
+    term = term.subs({symbol: x})
+
+    # Eliminate the specific symbol
+    term = sp.cancel(term, x)
+
+    # Substitute the original problematic numeric value, typically zero.
+    return term.subs({x: subs_dict[symbol]})
 
 def se2mpm( number , prec ):
     '''
@@ -245,8 +266,8 @@ def center( ver ):
     """
     Returns a list with the position vector of an attachment point at the geometric coordinates 
     """
-    return [ se.Matrix( [  0 , 0 , con( ver ) ] ) ]
-    # return [ se.Matrix( [  *con( 0 ,  0 , ver ) ] ) ]
+    # return [ se.Matrix( [  0 , 0 , con( ver ) ] ) ]
+    return [ se.Matrix( [  *con( 0 ,  0 , ver ) ] ) ]
 
 
 
