@@ -28,6 +28,17 @@ from gwsus import info
 from gwsus import anime
 
 # %%
+# The next instruction sets the verbosity level:
+info.VERBOSITY_LEVEL = 1
+
+# %%
+# The different values are for obtaining different amounts of information
+# during the calculation. With level ``0`` only the essential is given. 
+# With the default value ``1``, a larger but still moderate amount is printed. 
+# And with level ``2``, the methods produce even a larger amount of information
+# for the purposes of troubleshooting.
+
+# %%
 # Suspension instance
 # -------------------
 # First, the suspension is simply declared with its name:
@@ -169,13 +180,11 @@ SR2.calculate_mass_matrix()
 # structural damping by setting ``with_damping = False``: 
 SR2.calculate_stiffness_matrix(with_damping = False)
 
+
 # %%
 # As the output heading indicates, for calculating transfer functions
 # it is necessary to set ``with_damping = True``.
-#
-# Both of the above functions take the boolean keyword argument ``verbose``,
-# whose default value is ``False``, to indicate whether
-# information should be printed for troubleshooting.
+
 
 # %%
 # Frequencies and shapes of resonance modes

@@ -389,7 +389,7 @@ class Spring:
             add = add + angles_diff.dot( n ) ** 2
         total = se.Rational( 1 , 2 ) * self.k_torsion * add
         self.Ep_dict['torsion']['energy'] = total
-        vprint(f"""Ep_dict['torsion']['energy']: {self.Ep_dict['torsion']['energy'].free_symbols}. """, level=2, end='')
+        vprint(f"it dependens on {self.Ep_dict['torsion']['energy'].free_symbols}. ", level=2)
         return total
 
     def shape_parameters( self ):

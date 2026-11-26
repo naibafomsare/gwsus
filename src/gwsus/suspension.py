@@ -10,7 +10,7 @@ import symengine as se
 import sympy as sp
 from sympy import lambdify as splambdify  # to lambdify using mpmath module, which is not possible in Symengine.
 from sympy import sympify
-from termcolor import cprint
+# from termcolor import cprint
 
 from . import components, shapes3d, utils
 from .info import vprint
@@ -213,10 +213,10 @@ class Suspension:
         -----
         Typically for internal use, but can be called by user.
         """
-        print(
+        vprint(
             self.indent
             + "Calculating the total wire axial elastic potential energy... ",
-            end="",
+            level = 1,
         )
         add = 0
         for body in self.body_list[1:]:  # Skip the root, which doesn't have a wire
@@ -226,7 +226,6 @@ class Suspension:
                 ene = link.calculate_axial_Ep()
                 add = add + ene
         self.link_axial_Ep = add
-        print("Done.")
         return add
 
     def calculate_link_torsion_Ep(self):
@@ -241,10 +240,10 @@ class Suspension:
         self.link_torsion_Ep : type
             Algebraic expression of the total gravitational potential energy.
         """
-        print(
+        vprint(
             self.indent
             + "Calculating the total link torsional elastic potential energy... ",
-            end="",
+            level = 1 ,
         )
 
         add = 0
@@ -252,10 +251,9 @@ class Suspension:
         # Skip the root, which doesn't have a link.
         # Also internal links don't have torsional Ep
         for body in self.body_list[1:]:
-            vprint(f"\n{body.name}: ", level=2, end="")
+            vprint(f"{body.name}: ", level=2, end="")
             add = add + body.link.calculate_torsion_Ep()
         self.link_torsion_Ep = add
-        print("Done.")
         return add
 
     def calculate_grav_Ep(self):
@@ -274,8 +272,8 @@ class Suspension:
         -----
         Typically for internal use, but can be called by user.
         """
-        print(
-            self.indent + "Collecting gravitational potential energy terms... ", end=""
+        vprint(
+            self.indent + "Collecting gravitational potential energy terms... ", level = 1
         )
 
         add = 0
@@ -284,7 +282,6 @@ class Suspension:
         for body in self.body_list[1:]:
             add = add + body.grav_Ep
         self.grav_Ep = add
-        print("Done.")
         return add
 
     def calculate_Ek(self):
@@ -302,14 +299,13 @@ class Suspension:
         -----
         Typically for internal use, but can be called by user.
         """
-        print("Collecting kinetic energy terms... ", end="")
+        vprint("Collecting kinetic energy terms... ", level = 1)
         add = 0
-        for body in self.body_list[
-            1:
-        ]:  # Skip the root, which doesn't contribute to the total kinetic energy
+        # Skip the root, which doesn't contribute to the total kinetic energy
+        for body in self.body_list[1:]:
             add = add + body.Ek
         self.Ek = add
-        print("Done.")
+        # print("Done.")
         return add
 
     def calculate_Ep(self):
@@ -330,7 +326,7 @@ class Suspension:
         -----
         Typically for internal use, but can be called by user.
         """
-        print(self.indent + "Calculating the total potential energy...")
+        vprint(self.indent + "Calculating the total potential energy...", level=1)
         ind = self.indent
         self.indent = self.indent + "\t"
         e1 = self.calculate_grav_Ep()
@@ -349,7 +345,7 @@ class Suspension:
         Orders the coordinates according to type in a list.
         [ body, float , ground ]
         """
-        print("Compiling position and velocity coordinates...", end="")
+        vprint("Compiling position and velocity coordinates...", level = 1)
         self.tab = "\t"
 
         add1 = []
@@ -383,10 +379,9 @@ class Suspension:
             [coord - self.equi_coords_dict[coord] for coord in add1]
         )
 
-        print("Done.")
-        print(self.tab + "Number of body coordinates:", self.nbody)
-        print(self.tab + "Number of float coordinates:", self.nfloat)
-        print(self.tab + "Number of ground coordinates:", self.ngnd)
+        vprint(self.tab + f"Number of body coordinates: {self.nbody}", level = 1)
+        vprint(self.tab + f"Number of float coordinates: {self.nfloat}", level = 1)
+        vprint(self.tab + f"Number of ground coordinates: {self.ngnd}", level = 1)
 
     # ---------------------------------------------------------------
 
@@ -633,9 +628,9 @@ class Suspension:
             # Remove anything whose magnitude is smaller than the tolerance.
             result = mpm.chop(result, tol=tol)
 
-            result = [
-                utils.con(str(item)) for item in result
-            ]  # Convert to Symengine Rational
+            # Convert to Symengine Rational
+            result = [utils.con(str(item)) for item in result]
+            
             print("Done.")
 
         # Populate a dictionary self.equi_coords_dict with the results
@@ -661,7 +656,7 @@ class Suspension:
 
     # -------------------------------------------------------------------
 
-    def matrix_2nd_der(self, term, etype: str, verbose=False):
+    def matrix_2nd_der(self, term, etype: str):
         """ """
 
         if etype == "potential":
@@ -696,28 +691,36 @@ class Suspension:
         matrix = [[0 for _ in range(size)] for _ in range(size)]
 
         # Calculate the derivatives
-        print("calculating matrix... ", end="")
+        vprint("calculating matrix... ", level=1, end="")
         for idx, (symi, i) in enumerate(index_dict.items()):
             der = se.diff(term, symi)  # derivative w.r.t. the coordinate with index i
             for symj, j in list(index_dict.items())[idx:]:
                 der2_sym = se.diff(der, symj)  # Symbolic
                 der2 = der2_sym.subs(subs_dict)  # Numeric
                 if sympify(der2).has(sp.nan):
-                    if verbose == True:
-                        print(
-                            "\n"
-                            + self.indent
-                            + f"\tNan detected in element ({coords_list[i]},{coords_list[j]}), I'm trying to solve this... ",
-                            end="",
-                        )
-                    der2 = utils.simplify(der2_sym, subs_dict)
+                    
+                    vprint("\n\n" +
+                           self.indent * 2 +
+                           f"{(symi, symj)}: {subs_dict[symi],subs_dict[symj]}",
+                           level=2)
+                    
+                    vprint(self.indent * 2 +
+                           f"Value: {sp.simplify(der2)}",
+                           level=2)
+                    
+                    der2 = utils.cancel_nan(symj, der2_sym, subs_dict)
+                    
+                    vprint(self.indent * 2 +
+                           f"Value: {sp.simplify(der2)}",
+                           level=2)
+                    
                     if sympify(der2).has(sp.nan):
-                        print("Failed. ", end="")
-                    elif verbose == True:
-                        print("Solved. ", end="")
+                        print("I couldn't remove a nan: troubleshooting is required.")
+
                 matrix[i][j] = der2
                 matrix[j][i] = der2
-        print("Done.")
+
+        vprint("", level=1)
 
         return se.Matrix(matrix)
 
@@ -725,7 +728,7 @@ class Suspension:
 
     def calculate_mass_matrix(self, verbose=False):
         """ """
-        print("Let's calculate the mass matrix...")
+        vprint("Let's calculate the mass matrix...", level = 1)
         start_time = time.perf_counter()
 
         if self.Ek == 0:
@@ -736,32 +739,33 @@ class Suspension:
         if self.vel_coords_list == []:
             self.create_coords_list()
         else:
-            print("The list vel.coords_list has already been created.")
+            vprint("The list vel.coords_list has already been created.", level = 1)
 
-        self.M_matrix = self.matrix_2nd_der(Ek, "kinetic", verbose=verbose)
+        self.M_matrix = self.matrix_2nd_der(Ek, "kinetic")
 
         end_time = time.perf_counter()
         elapsed_time = end_time - start_time
-        print(f"Elapsed time: {elapsed_time:.4f} seconds.")
-        print(f"Done, call {self.name}.M_matrix to see the result.")
+        vprint(f"Elapsed time: {elapsed_time:.4f} seconds.", level = 1)
+        vprint(f"Done, call {self.name}.M_matrix to see the result.", level = 1)
 
     # -------------------------------------------------------------------
 
-    def calculate_stiffness_matrix(self, with_damping=False, verbose=False):
+    def calculate_stiffness_matrix(self, with_damping=False):
         """ """
-        print("Let's calculate the master stiffness matrix and its submatrices...")
+        vprint("Let's calculate the master stiffness matrix and its submatrices...", level = 1)
 
+        # Before, these statements used cprint with color=(152, 251, 152)
         if with_damping == True:
-            cprint(
+            vprint(
                 "The setting `with_damping = True` is suitable for later calculating transfer functions,\n"
                 "for calculating eigenvectors set `with_damping = False`.",
-                color=(152, 251, 152),
+                level = 1,
             )
         elif with_damping == False:
-            cprint(
+            vprint(
                 "The setting `with_damping = False` is suitable for later calculating eigenvectors,\n"
                 "for calculating transfer functions set `with_damping = True`.",
-                color=(152, 251, 152),
+                level = 1,
             )
 
         start_time = time.perf_counter()
@@ -779,7 +783,7 @@ class Suspension:
         # w/o root, which doesn't have a link
         for body in self.body_list[1:]:
 
-            print(f"For {body.name}:")
+            vprint(f"For {body.name}:", level=1)
             self.indent = "\t"
 
             # External and internal links
@@ -791,9 +795,9 @@ class Suspension:
                 # Check whether it's been calculated already
                 # If the corresponding dict entry equals None, calculate the matrix
                 if current1 == None:
-                    print(self.indent + "Link axial potential energy: ", end="")
+                    vprint(self.indent + "Link axial potential energy: ", level=1, end="")
                     term1 = link.Ep_dict["axial"]["energy"]
-                    matrix1 = self.matrix_2nd_der(term1, "potential", verbose=verbose)
+                    matrix1 = self.matrix_2nd_der(term1, "potential")
                     link.Ep_dict["axial"]["master"] = matrix1
                 # Otherwise use the one already there
                 else:
@@ -805,9 +809,9 @@ class Suspension:
                 # Check whether it's been calculated already
                 # If the corresponding dict entry equals None, calculate the matrix
                 if current2 == None:
-                    print(self.indent + "Link torsional potential energy: ", end="")
+                    vprint(self.indent + "Link torsional potential energy: ", level=1, end="")
                     term2 = link.Ep_dict["torsion"]["energy"]
-                    matrix2 = self.matrix_2nd_der(term2, "potential", verbose=verbose)
+                    matrix2 = self.matrix_2nd_der(term2, "potential")
                     link.Ep_dict["torsion"]["master"] = matrix2
                 # Otherwise use the one already there
                 else:
@@ -826,19 +830,20 @@ class Suspension:
                     d1 = d2 = d3 = 1
 
                 # Adds the stiffness matrix of the link to the total matrix of the suspension
-                print(self.indent + "Adding these matrices to total... ", end="")
+                vprint(self.indent + "Adding these matrices to total... ", level=1, end="")
                 P = P + d1 * matrix1 + d2 * matrix2  # + d3 * matrix3
-                print("Done.")
+                vprint("", level=1)
 
-        print(
-            f"I have the final master stiffness matrix, you can see it by calling {self.name}.P"
+        vprint(
+            f"I have the final master stiffness matrix, you can see it by calling {self.name}.P",
+            level = 1
         )
 
         # Mostly for troubleshooting because it's not used.
         self.P = P
 
         # Extracts submatrices from the total master stiffness matrix
-        print("Extracting the relevant submatrices from the master stiffness matrix...")
+        vprint("Extracting the relevant submatrices from the master stiffness matrix...", level=1)
 
         nb = self.nbody
         nbf = nb + self.nfloat
@@ -882,9 +887,9 @@ class Suspension:
             )
 
         else:
-            print(
-                self.indent
-                + "There are no float coordinates, matrices Q, C_XQ, C_QS and related don't exist."
+            vprint(
+                "There are no float coordinates, matrices Q, C_XQ, C_QS and related don't exist.",
+                level = 1
             )
 
             # Produces ().T.tolist() = [[]], needed in `anime.prepare_animation`
@@ -898,7 +903,7 @@ class Suspension:
 
         end_time = time.perf_counter()
         elapsed_time = end_time - start_time
-        print(f"Finished, elapsed time: {elapsed_time:.4f} seconds.")
+        vprint(f"Finished, elapsed time: {elapsed_time:.4f} seconds.", level = 1)
 
     # -----------------------------------------------------------------
 
@@ -1001,12 +1006,13 @@ class Suspension:
     def prepare_transfer_functions(self):
         """ """
         # Check whether there's any imaginary unit in the stiffness matrix
+        # This used to be printed with cprint with option "red".
         if sympify(self.K_eff_matrix).has(se.I) == False:
-            cprint(
+            vprint(
                 f"""Warning: it seems that the current value of the stiffness matrix `{self.name}.K_eff_matrix`
             does not accout for structural damping.
             Fix this by calling {self.name}.calculate_stiffness_matrix(with_damping = True).""",
-                "red",
+                level = 1
             )
 
         # Equation of motion matrix; self.w is the angular velocity.

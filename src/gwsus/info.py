@@ -54,7 +54,7 @@ def print_equilibrium_positions( sus , n_tables = 3 ) :
     if dict_calc != None:
         dict_guess = sus.equi_coords_guess_dict
         data = [[str(k), dict_guess[k] , v ] for k, v in dict_calc.items()] # Convert to a list of lists
-        headers = ['Symbol', 'Guessed\nvalue [m]', 'Calculated\nvalue [m]'] 
+        headers = ['Symbol', 'Estimated\nvalue [m]', 'Final\nvalue [m]'] 
         tabulate_side_by_side(data, headers, n_tables = n_tables )
     else:
         print("The equilibrium coordinates haven't been calculated, call calculate_equilibrium_positions() to do it.")

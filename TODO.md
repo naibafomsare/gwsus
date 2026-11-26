@@ -5,7 +5,6 @@
       from class `InternalSpring` to class `Spring`.
     - Eliminate `InternalSpring`.
     - Invoke `Spring` rather than `InternalSpring`.
-- [ ] In `matrix_2nd_der()` try using `utils.cancel_nan()` rather than `utils.simplify()`.
 - [ ] Implement inverted pendulums.
 - [ ] Implement the wire bending potential.
 - [ ] Validate results by comparison with independent calculations (e.g. Pendulum Toolkit, SUMCOM) and

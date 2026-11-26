@@ -136,15 +136,15 @@ def matrix_3x3_diagonal( ele1 , ele2 , ele3 ):
     '''
     return se.diag( *con( ele1 , ele2 , ele3 ) )
 
-func_list = [ sp.cancel , sp.factor , sp.simplify ]
-def simplify( term , subs_dict ):
-    simp = term
-    for func in func_list:
-        simp = func( simp )
-        simp_num = simp.subs( subs_dict )
-        if not simp_num.has( sp.nan ): # As soon as it is not nan
-            return simp_num            # Returns the value
-    return simp_num # When out of options, return nan. 
+# func_list = [ sp.cancel , sp.factor , sp.simplify ]
+# def simplify( term , subs_dict ):
+#     simp = term
+#     for func in func_list:
+#         simp = func( simp )
+#         simp_num = simp.subs( subs_dict )
+#         if not simp_num.has( sp.nan ): # As soon as it is not nan
+#             return simp_num            # Returns the value
+#     return simp_num # When out of options, return nan. 
 
 def cancel_nan(symbol, expr, subs_dict):
     '''
