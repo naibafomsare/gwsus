@@ -32,11 +32,13 @@ from gwsus import anime
 info.VERBOSITY_LEVEL = 1
 
 # %%
-# The different values are for obtaining different amounts of information
+# Different values are for obtaining different amounts of information
 # during the calculation. With level ``0`` only the essential is given. 
-# With the default value ``1``, a larger but still moderate amount is printed. 
+# With value ``1``, a larger but still moderate amount is printed. 
 # And with level ``2``, the methods produce even a larger amount of information
-# for the purposes of troubleshooting.
+# for the purposes of troubleshooting. This constant is declared with default
+# value of ``1`` in the library ``info``. When another value is required 
+# it must be set after loading such a library. 
 
 # %%
 # Suspension instance

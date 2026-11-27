@@ -20,6 +20,7 @@ Rigid body
    :end-before: # -- end-logic-tag --
    :linenos:
    :lineno-match:
+   :dedent:
 
 .. literalinclude:: ../../src/gwsus/components.py
    :language: python
@@ -27,6 +28,7 @@ Rigid body
    :end-before: # -- end-logic-tag-angular-velocity --
    :linenos:
    :lineno-match:
+   :dedent:
 
 ..
         Subheader
